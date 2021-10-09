@@ -12,7 +12,7 @@
 
 [**Ilya Pindrus**](https://github.com/ilya-pindrus)
 
-[**Jake**](https://github.com/jakobparkinson)
+[**Jake Parkinson**](https://github.com/jakobparkinson)
 
 [**Samuel Barber**](https://github.com/18barbers2)
 
