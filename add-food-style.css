@@ -1,0 +1,21 @@
+#dining-hall-tabs {
+    margin-left: 53px;
+    margin-top: 30px;
+}
+
+#card-container {
+    width: 100rem; 
+    height: 48rem;
+}
+
+#meal-tabs {
+    margin-left: 10px;
+}
+
+#meal-items {
+    height: 40rem;
+}
+
+#selected-items {
+    height: 40rem;
+}
