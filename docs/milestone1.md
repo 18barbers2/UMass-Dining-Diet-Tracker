@@ -1,6 +1,6 @@
-# UMass Diet Tracker Milestone-1
+## UMass Diet Tracker Milestone-1
 
-### Data Interactions
+# Data Interactions
 
 - Homepage
 
