@@ -29,10 +29,15 @@ If the user forgets their password, they enter their email and a server will sen
 ### Home Page
 ![image](milestone1-res/home-page.png)
 ### Food Page
+![image](milestone1-res/food.png)
 ### Profile Page
+![image](milestone1-res/profile.png)
 ### Sign in Page
+![image](milestone1-res/sign-in.png)
 ### Create Account Page
+![image](milestone1-res/create-account.png)
 ### Forget Password Page
+![image](milestone1-res/forgot-password.png)
 
 ### Division of Labor
 
