@@ -1,0 +1,23 @@
+#my-overview{
+    width: 75%;
+    height: 40%;
+    position: absolute;
+    left: 0;
+}
+
+#my-stats {
+    width: 25%;
+    height: 80%;
+    position: absolute;
+    right: 0%;
+    padding: 5px;
+}
+#my-weight {
+    width: 75%;
+    height: 40%;
+    position: absolute;
+    left: 0;
+    bottom:0;
+    padding: 5px;
+
+}
