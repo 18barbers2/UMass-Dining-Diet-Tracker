@@ -44,7 +44,7 @@ If the user forgets their password, they enter their email and a server will sen
 Sam, Ilya, Jake
 
 ### Wireframe
-Same, Ilya, Jake
+Sam, Ilya, Jake
 
 ### Website
 - Homepage
@@ -64,15 +64,21 @@ Same, Ilya, Jake
 # HTML Output
 
 ### Home Page
+
 ![image](milestone1-res/home-page-html.png)
 ### Food Page
+
 ![image](milestone1-res/food-html.png)
 ### Profile Page
+
 ![image](milestone1-res/profile-html.png)
 ### Sign in Page
+
 ![image](milestone1-res/sign-in-html.png)
 ### Create Account Page
+
 ![image](milestone1-res/create-account-html.png)
 ### Forget Password Page
+
 ![image](milestone1-res/forgot-password-html.png)
 
