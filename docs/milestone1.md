@@ -1,4 +1,4 @@
-### UMass Diet Tracker
+# UMass Diet Tracker Milestone-1
 
 ### Data Interactions
 
@@ -39,6 +39,27 @@ If the user forgets their password, they enter their email and a server will sen
 ![image](milestone1-res/forgot-password.png)
 
 # Division of Labor
+
+### Data Interactions
+Sam, Ilya, Jake
+
+### Wireframe
+Same, Ilya, Jake
+
+### Website
+- Homepage
+    - Sam, Ilya
+- Food Page
+    - Jake
+- Profile Page
+    - Sam
+- Sign in Page
+    - Ilya
+- Create an Account Page
+    - Sam
+- Forgot Password Page
+    - Ilya
+
 
 # HTML Output
 
