@@ -27,7 +27,7 @@ If the user forgets their password, they enter their email and a server will sen
 # Wireframes
 
 ### Home Page
-![Home](milestone1-res/Diet Tracker Profile Page - Home Page_.png)
+![Home]("milestone1-res/Diet Tracker Profile Page - Home Page_.png")
 ### Food Page
 ### Profile Page
 ### Sign in Page
