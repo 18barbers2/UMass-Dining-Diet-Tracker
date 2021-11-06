@@ -3,7 +3,7 @@ const addFood = document.getElementById("addFood");
 addFood.addEventListener('click', foodCheckout);
 
 
-const storage = window.localStorage;
+const storage = window.sessionStorage;
 
 /*click button: 
 1. take items in names of selected items
