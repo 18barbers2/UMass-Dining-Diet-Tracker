@@ -1,5 +1,5 @@
 const loginButton = document.getElementById("login-button");
-loginButton.addEventListener('click', updateName);
+loginButton.addEventListener('click', (async () => await updateName()));
 
 async function updateName() {
     let output = "";
@@ -19,6 +19,8 @@ async function updateName() {
     if (storage.getItem("name") === null) {
         storage.setItem("name", name);
     }
+    console.log("success");
 }
 
 //./home.html
+
