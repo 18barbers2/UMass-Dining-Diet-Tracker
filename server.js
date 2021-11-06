@@ -6,7 +6,7 @@ const port = 8080;
 const app = express();
 
 app.use(express.json());
-app.use(cors())
+app.use(express.static(__dirname));
 
 app.get('/login/:email', (req, res) => {
    // res.setHeader("Access-Control-Allow-Origin", "*");
@@ -41,6 +41,22 @@ app.get('/', (req,res) => {
 });
 
 
+// update Profile Daily Values
+
+app.get("/profile", (req,res) => {
+    console.log("serving profile");
+    res.sendFile(__dirname + '/profile.html');
+});
+
+// app.post('/profile/update',(req,res) => {
+//     console.log(req.body);
+//     res.sendFile(__dirname + '/home.html');
+// });
+
+app.get('/home',(req,res) => {
+    console.log("serving home");
+    res.sendFile(__dirname + '/home.html');
+});
 
 app.listen(port, () => {
     console.log(`Example app listening at http://localhost:${port}`);
