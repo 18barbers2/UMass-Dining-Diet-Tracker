@@ -33,7 +33,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Calorie Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -51,7 +51,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Carbohydrates Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -69,7 +69,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Fat Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -84,7 +84,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Sodium Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -102,7 +102,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Cholesterol Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -120,7 +120,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Sugar Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -138,7 +138,7 @@
                     <div class="row border border-warning my-2">
                         <div class="col-7 text-center">
                             <label for="goal-input" class="form-label">
-                                <h1>Daily Protein Goal</h1>
+                                <h1>Daily {VALUE}</h1>
                             </label>
                         </div>
                         <div class="col-4 my-2">
@@ -155,30 +155,83 @@
                     </div>
                 </form>
             </div>
-            <div class="container border border-dark mt-4 p-4">
-                <form>
-                    <div class="row justify-content-center">
-                        <div class="col-3 text-center">
-                            <label for="goal-input" class="form-label">
-                                <h1>Weight</h1>
-                            </label>
-                        </div>
-                        <div class="col-3 my-2">
-                            <div class="input-group">
-                                <input id = "goal-input" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
-                                <div class="input-group-append">
-                                    <span class="input-group-text">kg</span>
-                                </div> 
-                            </div>
-                        </div>
+        </div>
+        <div id = "labels" class = "container border my-5">
+            <form class = "form-inline">
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-calorie-goal" class = "form-label">Daily Calorie Goal:</label>
                     </div>
-                </form>
-            </div>
-            <div class="row border justify-content-center mt-3">
-                <div class="col-6 text-center">
-                    <form action="./home.html">
-                        <a class = "btn btn-lg btn-primary" href="./home.html">Update</a>
-                    </form>
+                    <div class = "col-sm-auto">
+                        <input id = "input-calorie-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-carbohydrate-goal" class = "form-label">Daily Carbohydrates Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-carbohydrate-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-fat-goal" class = "form-label">Daily Fat Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-fat-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-sodium-goal" class = "form-label">Daily Sodium Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-sodium-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-cholesterol-goal" class = "form-label">Daily Cholesterol Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-cholesterol-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-sugar-goal" class = "form-label">Daily Sugar Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-sugar-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+                <div class = "row p-1 form-group">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label for="input-protein-goal" class = "form-label">Daily Protein Goal:</label>
+                    </div>
+                    <div class = "col-sm-auto">
+                        <input id = "input-protein-goal" type="number" class = "form-control">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div id = "labels2" class = "container border p-5">
+            <form class = "form-inline">
+                <div class = "row p-1">
+                    <div class = "col-sm-3 offset-sm-3">
+                        <label class = "form-label" for="input-weight">Update Weight: </label>
+                    </div>
+                    <div class = col-sm-auto>
+                        <input class = "form-control" type="text" id = "input-weight">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class = "row pt-5">
+            <form action="./home.html">
+                <div class = "col-sm-4 offset-sm-6">
+                    <a class = "btn btn-dark" href="./home.html">Update</a>
                 </div>
             </div>
         </div>
