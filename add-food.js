@@ -70,10 +70,15 @@ async function foodCheckout() {
       var entry = headers[i].textContent;  //get text of selected item
       
       entry = entry.replace(/[\n\r]+|[\s]{2,}/g, ''); //get rid of formatting stuff
-      
+      if(entry === "") { //ensure no empty entries allowed (e.g. checkout on empty checkout / 1 item)
+        //console.log("Empty entry");
+        continue;
+      }
       if(selectedList[entry]) {
+        //console.log("existing entry: " + entry);
         selectedList[entry] += 100;   //if multiples exist, add to existing entry
       } else {
+       // console.log("new entry: " + entry);
         selectedList[entry] = 100;  //otherwise, create new entry
       }
       headers[i].textContent = ""; //just set to empty so we can reinsert 
@@ -87,7 +92,12 @@ async function foodCheckout() {
       }
     }
       */
-    
+    //TODO: uncheck all boxes by looping thru all checkbox items, setting checked = false 
+    var checkoutHeaders = document.getElementsByClassName('form-check-input');
+    for(let i = 0; i < checkoutHeaders.length; i++) {
+      checkoutHeaders[i].checked = false;
+    }
+
 
     let apiLink = "http://localhost:8080/checkout-food/" // + encodeURIcomponent(JSON.stringify(selectedList)) + "/";
 
