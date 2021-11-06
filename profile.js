@@ -19,22 +19,8 @@ async function updateDailyGoals() {
         },
     });
 
-    //check if the response was a success
-
     console.log(response.ok);
-    // if (response.ok) {
-    //     const userJSON = await response.json();
-    //     output = userJSON;
-    // } else {
-    //     //report error if you cant reach the api
-    //     output = "fail";
-    // }
-    // const name = output["name"];
-    // const storage = window.sessionStorage;
-    // //if the name is not already stored in the local session
-    // if (storage.getItem("name") === null) {
-    //     storage.setItem("name", name);
-    // }
+
 }
 
 
