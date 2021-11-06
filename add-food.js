@@ -2,6 +2,10 @@ const addFood = document.getElementById("addFood");
 
 addFood.addEventListener('click', foodCheckout);
 
+/*
+values stored in sessionStorage in a simple key-value pair, where
+the key is the nutrient/macronutrient, and the value is a number representing the amount consumed
+*/
 
 const storage = window.sessionStorage;
 
