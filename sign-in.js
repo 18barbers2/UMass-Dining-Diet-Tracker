@@ -14,8 +14,11 @@ async function updateName() {
         output = "fail";
     }
     const name = output["name"];
-    window.location = "./home.html";
-    console.log(window.location.getElementById("welcomeMsg").value);
+    const storage = window.sessionStorage;
+    //if the name is not already stored in the local session
+    if (storage.getItem("name") === null) {
+        storage.setItem("name", name);
+    }
 }
 
 //./home.html
