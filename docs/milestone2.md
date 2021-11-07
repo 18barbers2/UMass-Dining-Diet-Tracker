@@ -42,6 +42,12 @@ When the user forgets their password the '/delete/password' endpoint tells the d
 ![image](milestone2-res/delete-op.png)
 
 # Heroku Hosted Application
+https://git.heroku.com/umass-dining-diet-tracker.git
 
+# Division of Labor
 
+Sam: Implemented profile, and home endpoints, as well as how data is temporarily saved between webpages. Resolved some issues with HTML, and updated values on home page. Helped write milestone2.md file. Helped setup heroku and bugfix the deployment.
 
+Ilya: Implemented sign-in, create-account, delete/password endpoints. Helped write milestone2.md file. Helped organize how to handle users data. Helped setup heroku and bugfix the deployment.
+
+Jake: Added three endpoints (checkout-food, checkout-add, sign-in) to be used by respective js files. Changed links in navbar of 3 pages so they use endpoints to serve the page, rather than using html files. Created add-food.js, which provides functionality to the add-food page (like working checkboxes, DOM surgery on add-food.html, processing food names, etc.), and correctly sends data to localstorage. 
