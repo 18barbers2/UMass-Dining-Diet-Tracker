@@ -30,6 +30,19 @@ app.get('/checkout-food', (req, res) => {
 });
 
 
+
+app.post('/checkout-add', (req, res) => {
+
+    //res.setHeader("Access-Control-Allow-Origin", "*");
+    //TODO: check empty sent value
+    console.log(JSON.stringify(req.body));
+    const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
+    //res.json(json)
+    res.json(json)
+    //res.sendFile(__dirname + '/add-food.html');
+});
+
+
 // register account
 app.get('/user/register', (req,res) => {
     console.log(`body = ${JSON.stringify(req.body)}\n`);
@@ -52,6 +65,11 @@ app.get("/profile", (req,res) => {
 //     console.log(req.body);
 //     res.sendFile(__dirname + '/home.html');
 // });
+//TODO: signin endpoint
+app.get('/sign-in',(req,res) => {
+    console.log("serving sign-in");
+    res.sendFile(__dirname + '/sign-in.html');
+});
 
 app.get('/home',(req,res) => {
     console.log("serving home");
