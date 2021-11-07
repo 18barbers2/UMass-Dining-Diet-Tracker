@@ -1,9 +1,8 @@
 //window.addEventListener("load", loadName);
-window.addEventListener("load",loadGoals)
+//const Plotly = require('plotly.js');
 
-function loadName() {
-    document.getElementById("welcomeMsg").innerText = `Welcome ${window.sessionStorage.getItem("name")}!`;
-}
+window.addEventListener("load",loadGoals);
+window.addEventListener("load",loadWeight);
 
 function loadGoals() {
     document.getElementById("calorie-count").innerText = JSON.parse(window.localStorage.getItem("daily_goals"))["calories"];
@@ -16,5 +15,14 @@ function loadGoals() {
 
     const test = document.getElementById("sugar-progress");
     test.style.setProperty("width","99%"); 
+}
 
+function loadWeight() {
+
+    let canvas = document.getElementById("weight-chart");
+    Plotly.newPlot(canvas,[{
+        x: [1, 2, 3, 4, 5],
+        y: [1, 2, 4, 8, 16] }], {
+        margin: { t: 0 } } );
+    
 }
