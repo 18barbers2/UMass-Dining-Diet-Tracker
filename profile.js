@@ -6,20 +6,8 @@ async function updateDailyGoals() {
     let apiLink = "http://localhost:8080/profile/update";
     
     console.log("BUTTON CLICKED UPDATING GOALS");
-
     const dailyGoals = getDailyGoalValues();
-
     window.localStorage.setItem("daily_goals", dailyGoals);
-
-    // const response = await fetch(apiLink , {
-    //     method: 'POST',
-    //     body: dailyGoals,
-    //     headers: {
-    //       'Content-Type': 'application/json;charset=utf-8'
-    //     },
-    // });
-
-    console.log(response.ok);
 
 }
 

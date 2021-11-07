@@ -1,6 +1,6 @@
 'use strict';
 const output = {
-    "name": "Bob", "calorieLimit": 2000, "fatLimit": 50, "sodiumLimit": 3400, "sugarLimit": 125,
+    "name": "Nicki", "calorieLimit": 2000, "fatLimit": 50, "sodiumLimit": 3400, "sugarLimit": 125,
     "proteinLimit": 50, "carbLimit": 300, "cholesterolLimit": 250, "calories": 700, "fats": 22, 
     "sodium": 2000, "sugar": 33, "protein": 48, "carbs": 158, "cholesterol": 220
 };

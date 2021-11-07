@@ -1,5 +1,4 @@
 'use strict';
-//const cors = require("cors")
 
 const express = require('express');
 const port = 8080;
@@ -14,24 +13,15 @@ app.get('/', (req,res) => {
 
 //retrun json object with food values. will be passed food names
 app.get('/checkout-food', (req, res) => {
-    
-    //console.log(JSON.stringify(req.body));
-    //const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
-   // res.json(json)
     res.sendFile(__dirname + '/add-food.html');
 });
 
 
 
 app.post('/checkout-add', (req, res) => {
-
-    //res.setHeader("Access-Control-Allow-Origin", "*");
-    //TODO: check empty sent value
     console.log(JSON.stringify(req.body));
     const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
-    //res.json(json)
-    res.json(json)
-    //res.sendFile(__dirname + '/add-food.html');
+    res.json(json);
 });
 
 app.get('/login/:email', [loginErrorHandler, loginHandler]);
@@ -46,14 +36,19 @@ app.get("/profile", (req,res) => {
     res.sendFile(__dirname + '/profile.html');
 });
 
-// app.post('/profile/update',(req,res) => {
-//     console.log(req.body);
-//     res.sendFile(__dirname + '/home.html');
-// });
-//TODO: signin endpoint
 app.get('/sign-in',(req,res) => {
     console.log("serving sign-in");
     res.sendFile(__dirname + '/sign-in.html');
+});
+
+app.get('/create-account',(req,res) => {
+    console.log("serving create-account");
+    res.sendFile(__dirname + '/create-account.html');
+});
+
+app.get('/forgot-password',(req,res) => {
+    console.log("serving forgot-password");
+    res.sendFile(__dirname + '/forgot-password.html');
 });
 
 app.post('/create/account', (req, res) => {

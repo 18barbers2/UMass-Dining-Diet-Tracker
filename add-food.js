@@ -11,9 +11,7 @@ const storage = window.localStorage;
 
 function toggleCheckbox(item) {
   //if checked, add to checkout. 
-  //TODO: Remove from checkout????
   //loop through selected class. if text is empty, add to it. otherwise, checkout is full.
- 
   //var checkBoxes = document.getElementsByClassName('form-check-label'); //get menu labels
   var checkoutHeaders = document.getElementsByClassName('selectedFood'); //get checkout h values
 
@@ -27,11 +25,10 @@ function toggleCheckbox(item) {
    
       if(exfood === "") { //if one is empty, add food there
         checkoutHeaders[i].textContent = labelText;
-        //make green when checked???
+
         
         break;
-      } else { //no room
-        //console.log("no room: " + exfood + " is already there");
+      } else {
       }
     }
   } else { //unchecking the box: want to remove from the checkout by comparing string values
@@ -88,22 +85,14 @@ async function foodCheckout() {
       headers[i].textContent = ""; //just set to empty so we can reinsert 
       //later, can leave html same but have them empty so site doesn't start with random vals
     }
-    /*
-    while(headers.length !== 0){
-      if(headers.length > 0) {
-        //TODO: either remove cols/rows, or leave them and add an h4 to them from menu (i.e. have a set number of added foods)
-        //headers[0].remove(); //remove h4 (bad, cannot easily add back b/c missing class)
-      }
-    }
-      */
-    //TODO: uncheck all boxes by looping thru all checkbox items, setting checked = false 
+
     var checkoutHeaders = document.getElementsByClassName('form-check-input');
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
 
 
-    let apiLink = "http://localhost:8080/checkout-add/" // + encodeURIcomponent(JSON.stringify(selectedList)) + "/";
+    let apiLink = "http://localhost:8080/checkout-add/" 
 
     const response = await fetch(apiLink , {
         method: 'POST',
@@ -124,7 +113,6 @@ async function foodCheckout() {
         output = "fail";
     }
     //output now holds the response, a JSON object that contains nutrient information about the foods added
-    //console.log(JSON.stringify(output));
 
     /*for each item in "output":
         1. if the item does not exist in localstorage, initialize to 0
@@ -140,11 +128,9 @@ async function foodCheckout() {
       }
       var newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
       storage.setItem(key, newValue); //update storage
-      //console.log("storage value of " + key + ": " + storedValue);
-      //console.log("newVal: " + newValue);
+
     }
-    //console.log("New storage: " + JSON.stringify(storage));
-    
+
     
 }
 
