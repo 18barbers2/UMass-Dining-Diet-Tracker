@@ -1,5 +1,5 @@
 window.addEventListener("load", loadName);
 
 function loadName() {
-    document.getElementById("welcomeMsg").innerText = `Welcome ${window.sessionStorage.getItem("name")}!`;
+    document.getElementById("welcomeMsg").innerText = `Welcome ${JSON.parse(window.localStorage.getItem("user"))["name"]}!`;
 }
