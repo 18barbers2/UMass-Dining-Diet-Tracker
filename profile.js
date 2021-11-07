@@ -11,13 +11,13 @@ async function updateDailyGoals() {
 
     window.localStorage.setItem("daily_goals", dailyGoals);
 
-    const response = await fetch(apiLink , {
-        method: 'POST',
-        body: dailyGoals,
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-    });
+    // const response = await fetch(apiLink , {
+    //     method: 'POST',
+    //     body: dailyGoals,
+    //     headers: {
+    //       'Content-Type': 'application/json;charset=utf-8'
+    //     },
+    // });
 
     console.log(response.ok);
 
