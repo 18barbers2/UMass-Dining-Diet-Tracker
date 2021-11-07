@@ -12,17 +12,6 @@ app.get('/', (req,res) => {
     res.sendFile(__dirname + "/sign-in.html");
 });
 
-app.get('/login/:email', (req, res) => {
-   // res.setHeader("Access-Control-Allow-Origin", "*");
-    const username = req.params['email'];
-    console.log(username);
-    const name = "Bob";
-    const json = {"name": name, "username": username};
-    res.json(json);
-});
-
-//'{ "value" : "12" }'
-
 //retrun json object with food values. will be passed food names
 app.get('/checkout-food', (req, res) => {
     
@@ -45,13 +34,6 @@ app.post('/checkout-add', (req, res) => {
     //res.sendFile(__dirname + '/add-food.html');
 });
 
-
-// register account
-app.get('/user/register', (req,res) => {
-    console.log(`body = ${JSON.stringify(req.body)}\n`);
-    res.send('BODY');
-});
-
 app.get('/login/:email', [loginErrorHandler, loginHandler]);
 app.get('/home', (req, res) => {
     res.sendFile(__dirname + "/home.html");
@@ -59,7 +41,6 @@ app.get('/home', (req, res) => {
 
 
 // update Profile Daily Values
-
 app.get("/profile", (req,res) => {
     console.log("serving profile");
     res.sendFile(__dirname + '/profile.html');
@@ -75,9 +56,20 @@ app.get('/sign-in',(req,res) => {
     res.sendFile(__dirname + '/sign-in.html');
 });
 
-app.get('/home',(req,res) => {
-    console.log("serving home");
-    res.sendFile(__dirname + '/home.html');
+app.post('/create/account', (req, res) => {
+    const acctData = JSON.parse(req.body);
+    console.log(`account data recieved: ${JSON.stringify(acctData)}`);
+    updateDataBase(acctData);
+    const updateDataBase = (data) => true;
+    res.end();
+});
+
+app.post('/delete/password', (req, res) => {
+    const email = JSON.parse(req.body);
+    console.log(`account data recieved: ${JSON.stringify(acctData)}`);
+    deleteEmail(email);
+    const deleteEmail = (data) => true;
+    res.end();
 });
 
 app.listen(port, () => {
