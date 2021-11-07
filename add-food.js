@@ -7,7 +7,7 @@ values stored in sessionStorage in a simple key-value pair, where
 the key is the nutrient/macronutrient, and the value is a number representing the amount consumed
 */
 
-const storage = window.sessionStorage;
+const storage = window.localStorage;
 
 function toggleCheckbox(item) {
   //if checked, add to checkout. 
@@ -103,7 +103,7 @@ async function foodCheckout() {
     }
 
 
-    let apiLink = "http://localhost:8080/checkout-food/" // + encodeURIcomponent(JSON.stringify(selectedList)) + "/";
+    let apiLink = "http://localhost:8080/checkout-add/" // + encodeURIcomponent(JSON.stringify(selectedList)) + "/";
 
     const response = await fetch(apiLink , {
         method: 'POST',
@@ -131,6 +131,7 @@ async function foodCheckout() {
         2. otherwise, add it to the existing count  
     */
 
+    
     for(var key in output){
       let storedValue = storage.getItem(key);
       if(!storedValue){ //item doesn't exist yet, set to 0
