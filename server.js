@@ -1,10 +1,11 @@
 'use strict';
 
 import express from "express";
-// import path from 'path';
-// import { fileURLToPath } from 'url';
-// const __filename = fileURLToPath(import.meta.url);
-// const __dirname = path.dirname(__filename);
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+//import __dirname from "node:"
 
 //const express = require("express");
 
@@ -15,12 +16,12 @@ app.use(express.json());
 app.use("/", express.static("public"));
 
 app.get('/', (req,res) => {
-    res.sendFile(__dirname + "/sign-in.html");
+    res.sendFile(__dirname + "/public/sign-in.html");
 });
 
 //retrun json object with food values. will be passed food names
 app.get('/checkout-food', (req, res) => {
-    res.sendFile(__dirname + '/add-food.html');
+    res.sendFile(__dirname + '/public/add-food.html');
 });
 
 
@@ -33,29 +34,29 @@ app.post('/checkout-add', (req, res) => {
 
 app.get('/login/:email', [loginErrorHandler, loginHandler]);
 app.get('/home', (req, res) => {
-    res.sendFile(__dirname + "/home.html");
+    res.sendFile(__dirname + "/public/home.html");
 });
 
 
 // update Profile Daily Values
 app.get("/profile", (req,res) => {
     console.log("serving profile");
-    res.sendFile(__dirname + '/profile.html');
+    res.sendFile(__dirname + '/public/profile.html');
 });
 
 app.get('/sign-in',(req,res) => {
     console.log("serving sign-in");
-    res.sendFile(__dirname + '/sign-in.html');
+    res.sendFile(__dirname + '/public/sign-in.html');
 });
 
 app.get('/create-account',(req,res) => {
     console.log("serving create-account");
-    res.sendFile(__dirname + '/create-account.html');
+    res.sendFile(__dirname + '/public/create-account.html');
 });
 
 app.get('/forgot-password',(req,res) => {
     console.log("serving forgot-password");
-    res.sendFile(__dirname + '/forgot-password.html');
+    res.sendFile(__dirname + '/public/forgot-password.html');
 });
 
 app.post('/create/account', (req, res) => {
