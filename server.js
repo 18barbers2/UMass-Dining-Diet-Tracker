@@ -25,7 +25,6 @@ app.get('/checkout-food', (req, res) => {
 });
 
 
-
 app.post('/checkout-add', (req, res) => {
     console.log(JSON.stringify(req.body));
     const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
@@ -93,9 +92,9 @@ function loginHandler(req, res) {
     res.setHeader("Access-Control-Allow-Origin", "*");
     const username = req.params['email'];
     const json = {
-        "name": "Bob", "calorieLimit": 2000, "fatLimit": 50, "sodiumLimit": 3400, "sugarLimit": 125,
-        "proteinLimit": 50, "carbLimit": 300, "cholesterolLimit": 250, "calories": 700, "fats": 22, 
-        "sodium": 2000, "sugar": 33, "protein": 48, "carbs": 158, "cholesterol": 220
+       "proteinLimit": 50, "carbLimit": 300, "cholesterolLimit": 250, "calories": 700, "fats": 22, 
+      "name": "Bob", "calorieLimit": 2000, "fatLimit": 50, "sodiumLimit": 3400, "sugarLimit": 125,
+           "sodium": 2000, "sugar": 33, "protein": 48, "carbs": 158, "cholesterol": 220, "weight": 140
     };
     res.json(json);
 }
