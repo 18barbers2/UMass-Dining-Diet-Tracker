@@ -1,4 +1,6 @@
-window.addEventListener("load", () => {loadName(); loadGoals(); loadWeight(); loadCalories;});
+'use strict';
+
+window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
 
 function loadName() {
     document.getElementById("welcomeMsg").innerText = `Welcome ${JSON.parse(window.localStorage.getItem("user"))["name"]}!`;
@@ -72,19 +74,69 @@ function loadGoals() {
 
 function loadWeight() {
 
-    let canvas = document.getElementById("weight-chart");
-    Plotly.newPlot(canvas,[{
-        x: [1, 2, 3, 4, 5],
-        y: [180, 175, 156, 150, 160] }]);
+    const labels = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+    ];
+    const data = {
+        labels: labels,
+        datasets: [{
+          label: 'My First dataset',
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: [0, 10, 5, 2, 20, 30, 45],
+        }]
+    };
+    
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    };
+    const myChart = new Chart(document.getElementById('myWeightChart'), config);
     
 }
 
 function loadCalories() {
     
-    let canvas = document.getElementById("calorie-chart");
-    Plotly.newPlot(canvas,[{
-        x: [1, 2, 3, 4, 5],
-        y: [180, 175, 156, 150, 160] }]);
+    // let canvas = document.getElementById("calorie-chart");
+    // Plotly.newPlot(canvas,[{
+    //     x: [1, 2, 3, 4, 5],
+    //     y: [180, 175, 156, 150, 160] }]);
+    const labels = [
+        'January',
+        'February',
+        'March',
+        'April',
+        'May',
+        'June',
+    ];
+    const data = {
+        labels: labels,
+        datasets: [{
+          label: 'My First dataset',
+          backgroundColor: 'rgb(255, 99, 132)',
+          borderColor: 'rgb(255, 99, 132)',
+          data: [0, 10, 5, 2, 20, 30, 45],
+        }]
+    };
+    
+    const config = {
+        type: 'line',
+        data: data,
+        options: {
+            responsive: true,
+            maintainAspectRatio: true
+        }
+    };
+    const myChart = new Chart(document.getElementById('myCalorieChart'), config);
 }
 
 function loadOverview(){
