@@ -7,8 +7,48 @@ values stored in sessionStorage in a simple key-value pair, where
 the key is the nutrient/macronutrient, and the value is a number representing the amount consumed
 */
 
+
 const storage = window.localStorage;
 
+/*
+1. For now, just add original items. Function should eventually take an argument to populate with correct data.
+*/
+function foodTableAdd(name){
+  const table = document.getElementById("foodTable");
+  let row = table.insertRow(-1);
+  let foodEntry = row.insertCell(-1);
+
+  let formCheck = document.createElement('div');
+  formCheck.className = "form-check"; 
+
+  let checkboxInput = document.createElement('input');
+  checkboxInput.type = "checkbox";
+  checkboxInput.className = "form-check-input";
+  checkboxInput.id = "defaultCheck1";
+  checkboxInput.onclick = function () {
+    toggleCheckbox(this);
+  }
+
+  let foodLabel = document.createElement("label");
+  foodLabel.className = "form-check-label";
+  foodLabel.htmlFor = "defaultCheck1";
+  let foodFormat = document.createElement("h4");
+
+  let foodText = document.createTextNode(name);
+
+  foodFormat.appendChild(foodText); //Add formatting (h4) to text
+  checkboxInput.appendChild(foodLabel); // add label to checkbox 
+  
+  formCheck.appendChild(checkboxInput); //add checkbox to form
+  formCheck.appendChild(foodFormat); // THEN add formatted text
+  
+  foodEntry.appendChild(formCheck);
+
+}
+
+
+
+//TODO: Add numbers next to each item
 function toggleCheckbox(item) {
   /* if an item is checked and clicked on, add row and insert cell of item name */
 
