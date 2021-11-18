@@ -13,43 +13,34 @@ function toggleCheckbox(item) {
   //if checked, add to checkout. 
   //loop through selected class. if text is empty, add to it. otherwise, checkout is full.
   //var checkBoxes = document.getElementsByClassName('form-check-label'); //get menu labels
-  var checkoutHeaders = document.getElementsByClassName('selectedFood'); //get checkout h values
+  const checkoutHeaders = document.getElementsByClassName('selectedFood'); //get checkout h values
 
-  var labelText = item.nextElementSibling.textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //checkbox we're clicking's food name
+  const labelText = item.nextElementSibling.textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //checkbox we're clicking's food name
 
   if(item.checked === true) {
 
     for(let i = 0; i < checkoutHeaders.length; i++) { //for each checkout, check if empty
       
-      var exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //for each food displayed in checkout
+      let exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //for each food displayed in checkout
    
       if(exfood === "") { //if one is empty, add food there
         checkoutHeaders[i].textContent = labelText;
-
-        
         break;
-      } else {
       }
     }
   } else { //unchecking the box: want to remove from the checkout by comparing string values
       
       for(let i = 0; i < checkoutHeaders.length; i++) { //for each text in header, check if same as unchecked box
-        var exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //each checkout food name
+        const exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //each checkout food name
         //if current item name = one of the checkouts, remove checkout one
         if(labelText === exfood){
           //remove from checkout
           console.log(labelText + " is equal to " + exfood);
           checkoutHeaders[i].textContent = ""; //make empty
         }
-        
       }
   } 
 }
-
-
-
-
-
 
 /*click button: 
 1. take items in names of selected items
@@ -65,32 +56,29 @@ async function foodCheckout() {
     const selectedParent = document.getElementById("selecteditems"); //ul above selected list
     const children = selectedParent.children; //children is list of html in "selected" area
 
-    var headers = document.getElementsByClassName('selectedFood');
+    const headers = document.getElementsByClassName('selectedFood');
     let headersNumber = headers.length;
     for(let i = 0; i < headersNumber; i++) {
-      var entry = headers[i].textContent;  //get text of selected item
+      let entry = headers[i].textContent;  //get text of selected item
       
       entry = entry.replace(/[\n\r]+|[\s]{2,}/g, ''); //get rid of formatting stuff
       if(entry === "") { //ensure no empty entries allowed (e.g. checkout on empty checkout / 1 item)
-        //console.log("Empty entry");
         continue;
       }
       if(selectedList[entry]) {
-        //console.log("existing entry: " + entry);
         selectedList[entry] += 100;   //if multiples exist, add to existing entry
       } else {
-       // console.log("new entry: " + entry);
         selectedList[entry] = 100;  //otherwise, create new entry
       }
       headers[i].textContent = ""; //just set to empty so we can reinsert 
       //later, can leave html same but have them empty so site doesn't start with random vals
     }
 
-    var checkoutHeaders = document.getElementsByClassName('form-check-input');
+    /* Uncheck all the checked boxes upon checkout */
+    let checkoutHeaders = document.getElementsByClassName('form-check-input');
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
-
 
     let apiLink = "http://localhost:8080/checkout-add/" 
 
@@ -118,19 +106,15 @@ async function foodCheckout() {
         1. if the item does not exist in localstorage, initialize to 0
         2. otherwise, add it to the existing count  
     */
-
-    
-    for(var key in output){
+    for(let key in output){
       let storedValue = storage.getItem(key);
       if(!storedValue){ //item doesn't exist yet, set to 0
           storage.setItem(key, 0);
           storedValue = 0;
       }
-      var newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
+      const newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
       storage.setItem(key, newValue); //update storage
 
     }
-
-    
 }
 
