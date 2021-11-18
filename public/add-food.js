@@ -9,37 +9,34 @@ the key is the nutrient/macronutrient, and the value is a number representing th
 
 const storage = window.localStorage;
 
+
+
+
 function toggleCheckbox(item) {
-  //if checked, add to checkout. 
-  //loop through selected class. if text is empty, add to it. otherwise, checkout is full.
-  //var checkBoxes = document.getElementsByClassName('form-check-label'); //get menu labels
-  const checkoutHeaders = document.getElementsByClassName('selectedFood'); //get checkout h values
+  /* if an item is checked and clicked on, add row and insert cell of item name */
 
   const labelText = item.nextElementSibling.textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //checkbox we're clicking's food name
-
+  const table = document.getElementById("checkoutTable");
   if(item.checked === true) {
+    let row = table.insertRow(-1); //Insert row at last position
+    let foodCheckoutText = row.insertCell(0);
+    foodCheckoutText.textContent = labelText;
+  } else { //unchecking food: remove table with the text value of the food we uncheck by looping through and removing it
+      const rows = table.rows;
 
-    for(let i = 0; i < checkoutHeaders.length; i++) { //for each checkout, check if empty
-      
-      let exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //for each food displayed in checkout
-   
-      if(exfood === "") { //if one is empty, add food there
-        checkoutHeaders[i].textContent = labelText;
-        break;
-      }
-    }
-  } else { //unchecking the box: want to remove from the checkout by comparing string values
-      
-      for(let i = 0; i < checkoutHeaders.length; i++) { //for each text in header, check if same as unchecked box
-        const exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //each checkout food name
-        //if current item name = one of the checkouts, remove checkout one
-        if(labelText === exfood){
-          //remove from checkout
-          console.log(labelText + " is equal to " + exfood);
-          checkoutHeaders[i].textContent = ""; //make empty
+      for(let i = 0; i < rows.length; i++){ // For every entry in checkout
+
+        let cells = rows[i].cells; //Get cells for a row (should just be one, which is the entry)
+
+        for(let j = 0; j < cells.length; j++){
+
+          if(labelText === cells[j].textContent){ // If matching, remove
+            table.deleteRow(i); //delete the row
+          }
+         
         }
       }
-  } 
+  }
 }
 
 /*click button: 
