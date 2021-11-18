@@ -9,9 +9,6 @@ the key is the nutrient/macronutrient, and the value is a number representing th
 
 const storage = window.localStorage;
 
-
-
-
 function toggleCheckbox(item) {
   /* if an item is checked and clicked on, add row and insert cell of item name */
 
@@ -21,6 +18,8 @@ function toggleCheckbox(item) {
     let row = table.insertRow(-1); //Insert row at last position
     let foodCheckoutText = row.insertCell(0);
     foodCheckoutText.textContent = labelText;
+    foodCheckoutText.classList.add("h5");
+
   } else { //unchecking food: remove table with the text value of the food we uncheck by looping through and removing it
       const rows = table.rows;
 
@@ -39,45 +38,51 @@ function toggleCheckbox(item) {
   }
 }
 
-/*click button: 
+/* On Checkout button click:
 1. take items in names of selected items
 2. send names to endpoint
 3. get a json of combined nutrient values
 4. add nutrient values to local storage
 */
+
 async function foodCheckout() {
     
     let output = "";
     let selectedList = {};
 
-    const selectedParent = document.getElementById("selecteditems"); //ul above selected list
-    const children = selectedParent.children; //children is list of html in "selected" area
+    /* Loop through checkout table. For each row/cell, add to selectedList.
+    Then, uncheck all boxes. */
+    
 
-    const headers = document.getElementsByClassName('selectedFood');
-    let headersNumber = headers.length;
-    for(let i = 0; i < headersNumber; i++) {
-      let entry = headers[i].textContent;  //get text of selected item
-      
-      entry = entry.replace(/[\n\r]+|[\s]{2,}/g, ''); //get rid of formatting stuff
-      if(entry === "") { //ensure no empty entries allowed (e.g. checkout on empty checkout / 1 item)
-        continue;
+    const table = document.getElementById("checkoutTable");
+    const rows = table.rows;
+    for(let i = 0; i < rows.length; i++){ 
+
+      let cells = rows[i].cells;
+
+      for(let j = 0; j < cells.length; j++){
+        const foodEntry = cells[j].textContent;
+        if(selectedList[foodEntry]) {
+          selectedList[foodEntry] += 100;   //if multiples exist, add to existing entry
+        } else {
+          selectedList[foodEntry] = 100;  //otherwise, create new entry
+        }
+        
       }
-      if(selectedList[entry]) {
-        selectedList[entry] += 100;   //if multiples exist, add to existing entry
-      } else {
-        selectedList[entry] = 100;  //otherwise, create new entry
-      }
-      headers[i].textContent = ""; //just set to empty so we can reinsert 
-      //later, can leave html same but have them empty so site doesn't start with random vals
     }
-
-    /* Uncheck all the checked boxes upon checkout */
+    while(rows.length > 0) { // Delete all rows, which deletes all checkout food values
+      table.deleteRow(-1);
+    }
+    
     let checkoutHeaders = document.getElementsByClassName('form-check-input');
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
 
     let apiLink = "http://localhost:8080/checkout-add/" 
+
+    /* TODO: if selectedList is empty, don't send request. Otherwise, spamming checkout button increases values.
+    This could also be handled by the server, but probably bad idea. */
 
     const response = await fetch(apiLink , {
         method: 'POST',
@@ -87,22 +92,21 @@ async function foodCheckout() {
         body: JSON.stringify(selectedList)
       });
 
-    //check if the response was a success
+    // Ensure response was successful
     if (response.ok) {
         const userJSON = await response.json();
-        output = userJSON; //what the endpoint responds with (should be JSON)
+        output = userJSON; 
         console.log("success");
     } else {
-        //report error if you cant reach the api
         console.log("fail");
         output = "fail";
     }
-    //output now holds the response, a JSON object that contains nutrient information about the foods added
 
-    /*for each item in "output":
+    /* For each item in "output":
         1. if the item does not exist in localstorage, initialize to 0
         2. otherwise, add it to the existing count  
     */
+
     for(let key in output){
       let storedValue = storage.getItem(key);
       if(!storedValue){ //item doesn't exist yet, set to 0
@@ -114,4 +118,6 @@ async function foodCheckout() {
 
     }
 }
+
+
 
