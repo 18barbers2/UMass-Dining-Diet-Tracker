@@ -1,17 +1,55 @@
 const addFood = document.getElementById("addFood");
 
+const breakfastButton = document.getElementById("breakfastBtn");
+const lunchButton = document.getElementById("lunchBtn");
+const dinnerButton = document.getElementById("dinnerBtn");
+const grabButton = document.getElementById("grabBtn");
+
 addFood.addEventListener('click', foodCheckout);
 
-/*
-values stored in sessionStorage in a simple key-value pair, where
-the key is the nutrient/macronutrient, and the value is a number representing the amount consumed
-*/
-
+breakfastButton.addEventListener('click', foodTableUpdate);
+lunchButton.addEventListener('click', foodTableUpdate);
+dinnerButton.addEventListener('click', foodTableUpdate);
+grabButton.addEventListener('click', foodTableUpdate);
 
 const storage = window.localStorage;
 
+/* For each meal time button: on click, want to :
+1. clear current table
+2. add new stuff to table based on new food
+3. probably get a list of foods from db and loop through, adding to food display (which is slow) idk 
+needs some thought
+*/
+
+function foodTableUpdate(event){
+  foodTableClear();
+  const buttonType = event.currentTarget.id;
+ 
+  if(buttonType === "breakfastBtn"){
+    //food list = x, loop thru x adding food
+    foodTableAdd("pancake");
+    foodTableAdd("muffin");
+    foodTableAdd("eggs");
+  } else if(buttonType === "lunchBtn"){
+    foodTableAdd("salad");
+    foodTableAdd("sandwich");
+    foodTableAdd("panini");
+  } else if(buttonType === "dinnerBtn"){
+    foodTableAdd("pasta");
+    foodTableAdd("fries");
+    foodTableAdd("chicken tendies");
+  } else if(buttonType === "grabBtn"){
+    foodTableAdd("wrap");
+    foodTableAdd("yogurt");
+    foodTableAdd("powerade");
+  }
+
+}
+
+
 /*
 1. For now, just add original items. Function should eventually take an argument to populate with correct data.
+2. "name" is a string of the food name.
 */
 function foodTableAdd(name){
   const table = document.getElementById("foodTable");
@@ -32,7 +70,7 @@ function foodTableAdd(name){
   let foodLabel = document.createElement("label");
   foodLabel.className = "form-check-label";
   foodLabel.htmlFor = "defaultCheck1";
-  let foodFormat = document.createElement("h4");
+  let foodFormat = document.createElement("h5");
 
   let foodText = document.createTextNode(name);
 
@@ -44,6 +82,15 @@ function foodTableAdd(name){
   
   foodEntry.appendChild(formCheck);
 
+}
+
+/* Removes Currently displayed food in table */
+function foodTableClear() {
+  const table = document.getElementById("foodTable");
+  const rows = table.rows;
+  while(rows.length > 0) { // Delete all rows, which deletes all checkout food values
+    table.deleteRow(-1);
+  }
 }
 
 
