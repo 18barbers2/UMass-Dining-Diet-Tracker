@@ -26,7 +26,7 @@ function foodTableUpdate(event){
   const buttonType = event.currentTarget.id;
  
   if(buttonType === "breakfastBtn"){
-    //food list = x, loop thru x adding food
+    //food list = x, loop thru x adding food or make foodtableadd different
     foodTableAdd("pancake");
     foodTableAdd("muffin");
     foodTableAdd("eggs");
@@ -50,6 +50,8 @@ function foodTableUpdate(event){
 /*
 1. For now, just add original items. Function should eventually take an argument to populate with correct data.
 2. "name" is a string of the food name.
+Possible: take array of strings (or json if we use other values rather than just name)
+then for each name, do this
 */
 function foodTableAdd(name){
   const table = document.getElementById("foodTable");
