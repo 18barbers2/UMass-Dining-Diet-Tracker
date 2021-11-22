@@ -13,15 +13,15 @@
             <p class="lead">The UMASS Diet Tracker allow users to track caloric intake as well other nutrition facts from dining halls around the UMass Amherst campus.</p>
         </div>
 
-        <div class="form mt-5">
+        <form class="form mt-5" method = "POST">
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
             <div class="form-floating mb-3">
-                <input type="email" class="form-control" id="username" placeholder="name@example.com">
-                <label for="floatingInput">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder="name@example.com">
+                <label for="email">Email address</label>
             </div>
             <div class="form-floating">
-                <input type="password" class="form-control" id="floatingPassword" placeholder="Password">
-                <label for="floatingPassword">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Password" >
+                <label for="password">Password</label>
             </div>
             <div class="links mt-3 mb-3">
                 <a href="/create-account" class="create-an-account">Create an Account</a>
@@ -29,8 +29,8 @@
                 <a href="/forgot-password" class="forgot-password">Forgot Password</a>
                 <br>
             </div>
-            <a class="btn btn-primary btn-lg active" role="button" aria-pressed="true" id="login-button">Login</a>
-        </div>
+            <input type = "button" class = "btn btn-primary btn-lg active" role="button" aria-pressed="true" id="login-button" value = "Login"></input>
+        </form>
         
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
         <script src="./sign-in.js"></script>
