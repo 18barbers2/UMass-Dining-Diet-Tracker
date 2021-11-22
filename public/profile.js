@@ -1,21 +1,26 @@
 'use strict';
-
-
 async function updateDailyGoals() {
-    // let output = "";
-    //  let apiLink = "http://localhost:8080/profile/update";
-    // console.log("BUTTON CLICKED UPDATING GOALS");
+    console.log("BUTTON CLICKED UPDATING GOALS");
+    
+    const dailyGoals = JSON.stringify(getDailyGoalValues());
 
-    //TODO:SEND NUTRITIONAL TINGZ TO DATABASE
-    getDailyGoalValues();
+    let apiLink = "http://localhost:8080/profile";
+    await fetch(apiLink, {
+        method: 'POST',
+        body: dailyGoals,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+    });
 
 }
 
-
 function getDailyGoalValues() {
+    console.log("BUNDLING UP DATA");
 
+    // note: could be changed to loop if html is changed
     const calories = document.getElementById("calorie-goal").value;
-    const carbs = document.getElementById("carbs-goal").value;
+    const carbohydrates = document.getElementById("carbs-goal").value;
     const fat = document.getElementById("fat-goal").value;
     const sodium = document.getElementById("sodium-goal").value;
     const cholesterol = document.getElementById("cholesterol-goal").value;
@@ -23,18 +28,20 @@ function getDailyGoalValues() {
     const protein = document.getElementById("protein-goal").value;
     const weight = document.getElementById("weight").value;
 
-    let nutritionJSON = {"weight": weight, "calorieLimit": calories, "carbLimit": carbs, "fatLimit": fat,"sodiumLimit": sodium, "cholesterolLimit": cholesterol, "sugarLimit": sugar, "proteinLimit": protein};
+    const goals = {
+        nutritionGoals : {
+            calories: calories,
+            protein: protein,
+            carbohydrates: carbohydrates,
+            cholesterol: cholesterol,
+            fat: fat,
+            sodium: sodium,
+            sugar: sugar
+        }
+    };
     
-    const user = JSON.parse(storage.getItem("user"));
-
-    for (let item of Object.keys(nutritionJSON)){
-
-        user[item] = nutritionJSON[item];        
-
-    }
-
-    window.localStorage.setItem("user", JSON.stringify(user));
+    return goals;
 }
-
-const updateDailyValues = document.getElementById("update-nutrition");
-updateDailyValues.addEventListener("click", updateDailyGoals);
+    
+    const updateDailyValues = document.getElementById("update-nutrition");
+    updateDailyValues.addEventListener("click", () => updateDailyGoals());
