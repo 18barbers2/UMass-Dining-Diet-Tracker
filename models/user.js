@@ -28,6 +28,14 @@ const userSchema = new Schema({
     }
 });
 
-const User = mongoose.model('User', userSchema);
+const foodSchema = new Schema({
+    Berkshire: Schema.Types.Mixed,
+    Worcester: Schema.Types.Mixed,
+    Franklin: Schema.Types.Mixed,
+    Hampshire: Schema.Types.Mixed
+});
 
-export {User};
+const User = mongoose.model('User', userSchema);
+const Food = mongoose.model('Food', foodSchema);
+
+export {User, Food};

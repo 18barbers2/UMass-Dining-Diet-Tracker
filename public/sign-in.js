@@ -37,5 +37,6 @@ async function loginUser() {
     });
 
     console.log(response);
+    window.location.href = '/home';
 }
 

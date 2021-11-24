@@ -89,7 +89,7 @@ async function foodTableUpdate(event){
           headers: {
             'Content-Type': 'application/json;charset=utf-8'
           },
-          body: JSON.stringify(myobj)
+          body: JSON.stringify({})
         });
 
       if (response.ok) {
