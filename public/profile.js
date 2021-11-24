@@ -8,7 +8,6 @@ async function updateDailyGoals() {
 
     //TODO:SEND NUTRITIONAL TINGZ TO DATABASE
     getDailyGoalValues();
-
 }
 
 
