@@ -23,6 +23,7 @@ worcesterButton.addEventListener('click', foodTableUpdate);
 berkshireButton.addEventListener('click', foodTableUpdate);
 hampshireButton.addEventListener('click', foodTableUpdate);
 
+//On load, show frank's menu so its not empty
 window.onload = function() {
   frankButton.click();
 }
@@ -43,6 +44,7 @@ If pressing dining hall button, make db request for that dining hall's values, s
 If meal, display all food items for that meal (or just food for now)
 
 */
+//object holds menu of last clicked dining hall
 let currentMenu = {};
 
 async function foodTableUpdate(event){
@@ -56,7 +58,7 @@ async function foodTableUpdate(event){
     
     if(buttonType === "breakfastBtn"){
       
-     // console.log("breakfast items: " + JSON.stringify(breakfastItems));
+     //If clicking a meal button, add from menu to the food display table
       for(let food of currentMenu["breakfast"]){
         foodTableAdd(food);
       }
@@ -77,6 +79,7 @@ async function foodTableUpdate(event){
     //clicking on a dining hall button: either do if else for each, or send a string indicating which hall to endpoint
   } else if(diningHalls.includes(buttonType)){
 
+      //Send a object to server, which will respond with the menu for that dining hall
       const apiLink = "http://localhost:8080/get-food/" 
       const myobj = {diningHall: buttonType}; //we don't want to send anything
       let output = "";
@@ -92,7 +95,7 @@ async function foodTableUpdate(event){
       if (response.ok) {
           const userJSON = await response.json();
           currentMenu = userJSON; 
-          breakfastButton.click(); //default shows breakfast
+          breakfastButton.click(); //default shows breakfast for the dininghall so its not empty
           
       } else {
           console.log("fail");
@@ -101,7 +104,7 @@ async function foodTableUpdate(event){
   } else {
     console.log("error");
   }
-  //console.log("today's menu: " + JSON.stringify(currentMenu));
+  
 }
 
 /*
@@ -187,11 +190,13 @@ function toggleCheckbox(item) {
   }
 }
 
-/* On Checkout button click:
-1. take items in names of selected items
-2. send names to endpoint
-3. get a json of combined nutrient values
-4. add nutrient values to local storage
+/* CHECKOUT WITH DATABASE
+1. Add added items from checkout into "selected items"
+2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
+3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
+4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
+5. done
+
 */
 
 async function foodCheckout() {
@@ -202,7 +207,6 @@ async function foodCheckout() {
     /* Loop through checkout table. For each row/cell, add to selectedList.
     Then, uncheck all boxes. */
     
-
     const table = document.getElementById("checkoutTable");
     const rows = table.rows;
     for(let i = 0; i < rows.length; i++){ 
@@ -212,9 +216,9 @@ async function foodCheckout() {
       for(let j = 0; j < cells.length; j++){
         const foodEntry = cells[j].textContent;
         if(selectedList[foodEntry]) {
-          selectedList[foodEntry] += 100;   //if multiples exist, add to existing entry
+          selectedList[foodEntry] += 1;   //if multiples exist, add to existing entry
         } else {
-          selectedList[foodEntry] = 100;  //otherwise, create new entry
+          selectedList[foodEntry] = 1;  //otherwise, create new entry
         }
         
       }
@@ -227,44 +231,42 @@ async function foodCheckout() {
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
+    if(Object.keys(selectedList).length !== 0){
+      let apiLink = "http://localhost:8080/checkout-add/" 
+      
+      const response = await fetch(apiLink , {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify(selectedList)
+        });
 
-    let apiLink = "http://localhost:8080/checkout-add/" 
-
-    /* TODO: if selectedList is empty, don't send request. Otherwise, spamming checkout button increases values.
-    This could also be handled by the server, but probably bad idea. */
-
-    const response = await fetch(apiLink , {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(selectedList)
-      });
-
-    // Ensure response was successful
-    if (response.ok) {
-        const userJSON = await response.json();
-        output = userJSON; 
-        console.log("success");
-    } else {
-        console.log("fail");
-        output = "fail";
-    }
-
-    /* For each item in "output":
-        1. if the item does not exist in localstorage, initialize to 0
-        2. otherwise, add it to the existing count  
-    */
-
-    for(let key in output){
-      let storedValue = storage.getItem(key);
-      if(!storedValue){ //item doesn't exist yet, set to 0
-          storage.setItem(key, 0);
-          storedValue = 0;
+      // Ensure response was successful
+      if (response.ok) {
+          const userJSON = await response.json();
+          output = userJSON; 
+          console.log("success");
+      } else {
+          console.log("fail");
+          output = "fail";
       }
-      const newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
-      storage.setItem(key, newValue); //update storage
 
+      /* For each item in "output":
+          1. if the item does not exist in localstorage, initialize to 0
+          2. otherwise, add it to the existing count  
+      */
+      //should be obsolete when updating food thru database
+      for(let key in output){
+        let storedValue = storage.getItem(key);
+        if(!storedValue){ //item doesn't exist yet, set to 0
+            storage.setItem(key, 0);
+            storedValue = 0;
+        }
+        const newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
+        storage.setItem(key, newValue); //update storage
+
+      }
     }
 }
 
