@@ -18,7 +18,8 @@ app.use("/", express.static("public"));
 //LEAVE ROOM FOR DATABASE STUFF
 
 
-const pass = process.env.PASSWORD;
+
+const pass = process.env.PASSWORD
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
@@ -46,6 +47,27 @@ app.get('/checkout-food', (req, res) => {
     res.sendFile(__dirname + '/public/add-food.html');
 });
 
+// Recieves simple object of form {dinginHall: "name"}. Should be used to grab correct food from DB based on name
+app.post('/get-food', (req, res) => {
+    //console.log("get-food: " + JSON.stringify(req.body));
+    const hall = req.body.diningHall;
+    let menu = {};
+    //each block should grab different info. or, we grab info above and parse in the block
+    if(hall === "frank") {
+        console.log("get-food: frank");
+        menu = {breakfast: ["pancakes", "eggs"], lunch: ["sandwich", "coleslaw"], dinner: ["steak", "ramen"], grab: ["wings"]} //parsing depends on how item is retrieved
+    } else if(hall === "worcester"){
+        console.log("get-food: worcester");
+        menu = {breakfast: ["hashbrowns", "fried egg"], lunch: ["salad", "bahn mi"], dinner: ["salmon", "buns"], grab: ["soda"]}
+    } else if(hall === "berkshire") {
+        console.log("get-food: berk");
+        menu = {breakfast: ["breakfast burrito", "bagel"], lunch: ["mac n cheese", "cobb salad"], dinner: ["stir fry", "mushrooms"], grab: ["wrap"]}
+    } else if(hall === "hampshire"){
+        menu = {breakfast: ["waffles", "croissant"], lunch: ["mcdonalds", "coffee"], dinner: ["shrimp", "pasta"], grab: ["chicken and rice"]}
+        console.log("get-food: hamp");
+    }
+    res.json(menu); //return data for that dining hall, to be stored in global
+});
 
 app.post('/checkout-add', (req, res) => {
     console.log(JSON.stringify(req.body));

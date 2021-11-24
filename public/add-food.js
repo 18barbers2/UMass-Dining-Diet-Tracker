@@ -1,9 +1,15 @@
 const addFood = document.getElementById("addFood");
 
+const frankButton = document.getElementById("frank");
+const worcesterButton = document.getElementById("worcester");
+const berkshireButton = document.getElementById("berkshire");
+const hampshireButton = document.getElementById("hampshire");
+
 const breakfastButton = document.getElementById("breakfastBtn");
 const lunchButton = document.getElementById("lunchBtn");
 const dinnerButton = document.getElementById("dinnerBtn");
 const grabButton = document.getElementById("grabBtn");
+
 
 addFood.addEventListener('click', foodCheckout);
 
@@ -12,47 +18,101 @@ lunchButton.addEventListener('click', foodTableUpdate);
 dinnerButton.addEventListener('click', foodTableUpdate);
 grabButton.addEventListener('click', foodTableUpdate);
 
-const storage = window.localStorage;
+frankButton.addEventListener('click', foodTableUpdate);
+worcesterButton.addEventListener('click', foodTableUpdate);
+berkshireButton.addEventListener('click', foodTableUpdate);
+hampshireButton.addEventListener('click', foodTableUpdate);
 
-/* For each meal time button: on click, want to :
-1. clear current table
-2. add new stuff to table based on new food
-3. probably get a list of foods from db and loop through, adding to food display (which is slow) idk 
-needs some thought
-*/
-
-function foodTableUpdate(event){
-  foodTableClear();
-  const buttonType = event.currentTarget.id;
- 
-  if(buttonType === "breakfastBtn"){
-    //food list = x, loop thru x adding food or make foodtableadd different
-    foodTableAdd("pancake");
-    foodTableAdd("muffin");
-    foodTableAdd("eggs");
-  } else if(buttonType === "lunchBtn"){
-    foodTableAdd("salad");
-    foodTableAdd("sandwich");
-    foodTableAdd("panini");
-  } else if(buttonType === "dinnerBtn"){
-    foodTableAdd("pasta");
-    foodTableAdd("fries");
-    foodTableAdd("chicken tendies");
-  } else if(buttonType === "grabBtn"){
-    foodTableAdd("wrap");
-    foodTableAdd("yogurt");
-    foodTableAdd("powerade");
-  }
-
+window.onload = function() {
+  frankButton.click();
 }
 
+/* Rough draft of how to get data
+1. Each dining hall button has endpoint
+2. That endpoint will grab that dining hall's data, including food
+3. Data put into a global object 
+4. Upon clicking a meal time button, find time in global object, add all foods into table
+5. ???
+6. profit
+*/
+//FOR NOW: get used to mongoose/Plan around mongoose. note: all mongoose stuff should be thru server
+
+/*Two types of buttons: 1. dining hall button 2. meal button
+If pressing dining hall button, make db request for that dining hall's values, store in some value
+
+If meal, display all food items for that meal (or just food for now)
+
+*/
+let currentMenu = {};
+
+async function foodTableUpdate(event){
+  foodTableClear();
+  const buttonType = event.currentTarget.id;
+  const mealButtons = ["breakfastBtn", "lunchBtn", "dinnerBtn", "grabBtn"];
+  const diningHalls = ["frank", "worcester", "berkshire", "hampshire"];
+
+  //Clicking a meal button. Should parse from global object that stores last clicked dining hall button.
+  if(mealButtons.includes(buttonType)){
+    
+    if(buttonType === "breakfastBtn"){
+      
+     // console.log("breakfast items: " + JSON.stringify(breakfastItems));
+      for(let food of currentMenu["breakfast"]){
+        foodTableAdd(food);
+      }
+    } else if(buttonType === "lunchBtn"){
+      for(let food of currentMenu["lunch"]){
+        foodTableAdd(food);
+      }
+
+    } else if(buttonType === "dinnerBtn"){
+      for(let food of currentMenu["dinner"]){
+        foodTableAdd(food);
+      }
+    } else if(buttonType === "grabBtn"){
+      for(let food of currentMenu["grab"]){
+        foodTableAdd(food);
+      }
+    }
+    //clicking on a dining hall button: either do if else for each, or send a string indicating which hall to endpoint
+  } else if(diningHalls.includes(buttonType)){
+
+      const apiLink = "http://localhost:8080/get-food/" 
+      const myobj = {diningHall: buttonType}; //we don't want to send anything
+      let output = "";
+
+      const response = await fetch(apiLink , {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify(myobj)
+        });
+
+      if (response.ok) {
+          const userJSON = await response.json();
+          currentMenu = userJSON; 
+          breakfastButton.click(); //default shows breakfast
+          
+      } else {
+          console.log("fail");
+          output = "fail";
+      }
+  } else {
+    console.log("error");
+  }
+  //console.log("today's menu: " + JSON.stringify(currentMenu));
+}
 
 /*
 1. For now, just add original items. Function should eventually take an argument to populate with correct data.
 2. "name" is a string of the food name.
 Possible: take array of strings (or json if we use other values rather than just name)
 then for each name, do this
+
+When clicking dining hall button: grab dining hall db collection
 */
+
 function foodTableAdd(name){
   const table = document.getElementById("foodTable");
   let row = table.insertRow(-1);
