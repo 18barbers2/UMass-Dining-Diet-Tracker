@@ -40,12 +40,6 @@ window.onload = function() {
 /*Two types of buttons: 1. dining hall button 2. meal button
 If pressing dining hall button, make db request for that dining hall's values, store in some value
 
-<<<<<<< HEAD
-If meal, display all food items for that meal (or just food for now)
-
-*/
-let currentMenu = {};
-=======
 function toggleCheckbox(item) {
   //if checked, add to checkout. 
   //loop through selected class. if text is empty, add to it. otherwise, checkout is full.
@@ -53,7 +47,6 @@ function toggleCheckbox(item) {
   const checkoutHeaders = document.getElementsByClassName('selectedFood'); //get checkout h values
 
   const labelText = item.nextElementSibling.textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //checkbox we're clicking's food name
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
 
 async function foodTableUpdate(event){
   foodTableClear();
@@ -66,49 +59,6 @@ async function foodTableUpdate(event){
     
     if(buttonType === "breakfastBtn"){
       
-<<<<<<< HEAD
-     // console.log("breakfast items: " + JSON.stringify(breakfastItems));
-      for(let food of currentMenu["breakfast"]){
-        foodTableAdd(food);
-      }
-    } else if(buttonType === "lunchBtn"){
-      for(let food of currentMenu["lunch"]){
-        foodTableAdd(food);
-      }
-
-    } else if(buttonType === "dinnerBtn"){
-      for(let food of currentMenu["dinner"]){
-        foodTableAdd(food);
-      }
-    } else if(buttonType === "grabBtn"){
-      for(let food of currentMenu["grab"]){
-        foodTableAdd(food);
-      }
-    }
-    //clicking on a dining hall button: either do if else for each, or send a string indicating which hall to endpoint
-  } else if(diningHalls.includes(buttonType)){
-
-      const apiLink = "http://localhost:8080/get-food/" 
-      const myobj = {diningHall: buttonType}; //we don't want to send anything
-      let output = "";
-
-      const response = await fetch(apiLink , {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-          },
-          body: JSON.stringify(myobj)
-        });
-
-      if (response.ok) {
-          const userJSON = await response.json();
-          currentMenu = userJSON; 
-          breakfastButton.click(); //default shows breakfast
-          
-      } else {
-          console.log("fail");
-          output = "fail";
-=======
       let exfood = checkoutHeaders[i].textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //for each food displayed in checkout
    
       if(exfood === "") { //if one is empty, add food there
@@ -126,7 +76,6 @@ async function foodTableUpdate(event){
           console.log(labelText + " is equal to " + exfood);
           checkoutHeaders[i].textContent = ""; //make empty
         }
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
       }
   } else {
     console.log("error");
@@ -185,43 +134,7 @@ function foodTableClear() {
   }
 }
 
-<<<<<<< HEAD
-
-
-//TODO: Add numbers next to each item
-function toggleCheckbox(item) {
-  /* if an item is checked and clicked on, add row and insert cell of item name */
-
-  const labelText = item.nextElementSibling.textContent.replace(/[\n\r]+|[\s]{2,}/g, ''); //checkbox we're clicking's food name
-  const table = document.getElementById("checkoutTable");
-  if(item.checked === true) {
-    let row = table.insertRow(-1); //Insert row at last position
-    let foodCheckoutText = row.insertCell(0);
-    foodCheckoutText.textContent = labelText;
-    foodCheckoutText.classList.add("h5");
-
-  } else { //unchecking food: remove table with the text value of the food we uncheck by looping through and removing it
-      const rows = table.rows;
-
-      for(let i = 0; i < rows.length; i++){ // For every entry in checkout
-
-        let cells = rows[i].cells; //Get cells for a row (should just be one, which is the entry)
-
-        for(let j = 0; j < cells.length; j++){
-
-          if(labelText === cells[j].textContent){ // If matching, remove
-            table.deleteRow(i); //delete the row
-          }
-         
-        }
-      }
-  }
-}
-
-/* On Checkout button click:
-=======
 /*click button: 
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
 1. take items in names of selected items
 2. send names to endpoint
 3. get a json of combined nutrient values
@@ -237,22 +150,6 @@ async function foodCheckout() {
     Then, uncheck all boxes. */
     
 
-<<<<<<< HEAD
-    const table = document.getElementById("checkoutTable");
-    const rows = table.rows;
-    for(let i = 0; i < rows.length; i++){ 
-
-      let cells = rows[i].cells;
-
-      for(let j = 0; j < cells.length; j++){
-        const foodEntry = cells[j].textContent;
-        if(selectedList[foodEntry]) {
-          selectedList[foodEntry] += 100;   //if multiples exist, add to existing entry
-        } else {
-          selectedList[foodEntry] = 100;  //otherwise, create new entry
-        }
-        
-=======
     const headers = document.getElementsByClassName('selectedFood');
     let headersNumber = headers.length;
     for(let i = 0; i < headersNumber; i++) {
@@ -266,18 +163,10 @@ async function foodCheckout() {
         selectedList[entry] += 100;   //if multiples exist, add to existing entry
       } else {
         selectedList[entry] = 100;  //otherwise, create new entry
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
       }
     }
-<<<<<<< HEAD
-    while(rows.length > 0) { // Delete all rows, which deletes all checkout food values
-      table.deleteRow(-1);
-    }
-    
-=======
 
     /* Uncheck all the checked boxes upon checkout */
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
     let checkoutHeaders = document.getElementsByClassName('form-check-input');
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
@@ -310,10 +199,6 @@ async function foodCheckout() {
         1. if the item does not exist in localstorage, initialize to 0
         2. otherwise, add it to the existing count  
     */
-<<<<<<< HEAD
-
-=======
->>>>>>> 2a2422bf834777098f52d26b6c2c3b0e9df5478a
     for(let key in output){
       let storedValue = storage.getItem(key);
       if(!storedValue){ //item doesn't exist yet, set to 0
