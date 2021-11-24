@@ -38,16 +38,16 @@
       <div class="row">
         <div class="col" id="dining-location">
           <div class="btn-group">
-            <button type = "button" class="btn btn-dark">
+            <button type = "button" id="frank" class="btn btn-dark">
               <h2>Franklin</h2>
             </button>
-            <button type = "button" class="btn btn-dark">
+            <button type = "button" id="worcester" class="btn btn-dark">
               <h2>Worcester</h2>
             </button>
-            <button type = "button" class="btn btn-dark">
+            <button type = "button" id="berkshire" class="btn btn-dark">
               <h2>Berkshire</h2>
             </button>
-            <button type = "button" class="btn btn-dark">
+            <button type = "button" id="hampshire" class="btn btn-dark">
               <h2>Hampshire</h2>
             </button>
           </div>
@@ -55,17 +55,17 @@
       </div>
       <div class="row pt-3">
         <div class="col-6" id="meal">
-          <div class="btn-group">
-            <button type = "button" class="btn btn-secondary">
+          <div class="btn-group"> 
+            <button type = "button" id="breakfastBtn" class="btn btn-secondary">
               Breakfast
             </button>
-            <button type = "button" class="btn btn-secondary">
+            <button type = "button" id="lunchBtn" class="btn btn-secondary">
               Lunch
             </button>
-            <button type = "button" class="btn btn-secondary">
+            <button type = "button" id="dinnerBtn" class="btn btn-secondary">
               Dinner
             </button>
-            <button type = "button" class="btn btn-secondary">
+            <button type = "button" id="grabBtn" class="btn btn-secondary">
               Grab N' Go
             </button>
           </div>
@@ -80,179 +80,27 @@
         Checkout
       </h1>
     </div>
-    <div class="row mx-3">
+    <div class="row mx-3"> <!--should also use a table for this-->
       <div class="col-8">
         <div class="container border border-warning pt-2">
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Apple Cinnamon Pancakes
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Black Beans
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Chicken Congee
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Chinese Twist Cruller
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Hard Boiled Eggs
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Hot Oatmeal
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Mexican Potato Casserole
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-6">
-              <div class="form-check">
-                <input type="checkbox" class="form-check-input" id = "defaultCheck1" onclick="toggleCheckbox(this)">
-                <label class = "form-check-label" for="defaultCheck1">
-                  <h4>
-                    Omelet Bar
-                  </h4>
-                </label>
-              </div>
-            </div>
-          </div>
+          
+          <table class="table " id="foodTable"> <!--may want to add table in js.-->
+            <tbody>
+              
+
+
+            </tbody>
+          </table>
+          
         </div>
       </div>
       <div class="col-4">
         <div class="container border border-warning text-center" id="selecteditems">
-          <div class="row">
-            <div class="col"> <!--ensure all h4 values have selectedFood class-->
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col">
-              <h4 class="selectedFood">
-                
-              </h4>
-            </div>
-          </div>
+          <table class="table " id="checkoutTable"> <!--may want to add table in js.-->
+            <tbody>
+            </tbody>
+          </table>
+
           <div class="row">
             <div class="col"> <!--add href, /home, points to an endpoint-->
               <button class="btn btn-primary m-3" id="addFood">
