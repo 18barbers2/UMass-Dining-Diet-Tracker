@@ -271,6 +271,9 @@ function runCronJob() {
             Franklin: food['Franklin'],
             Hampshire: food['Hampshire']
         });
+        //clear the collection before adding to it
+        await Food.deleteMany();
+        //update the Foods collection
         diningHallFoods.save(function (err) {
             if (err) console.log(err);
         });
