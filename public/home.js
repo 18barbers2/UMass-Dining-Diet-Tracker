@@ -1,37 +1,85 @@
 'use strict';
 
-window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
+// import {User} from './models/user.js';
+
+// const User = require('./models/user.js');
+
+let userData = {};
+
+// window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
+window.addEventListener("load", async () => {await loadData(); loadName(); loadGoals(); loadCalories(); loadWeight();});
+
+
+async function loadData() {
+
+    console.log(window.localStorage.getItem("userEmail"));
+    let userEmailJson = {"email": window.localStorage.getItem("userEmail")};
+    const response = await fetch('http://localhost:8080/user/schema', {
+        method: "POST", 
+        body: JSON.stringify(userEmailJson),
+        headers: {'Content-type': 'application/json'}
+    }); 
+    console.log("WHERE AR WE");
+    userData = await response.json();
+    console.log(userData);
+}
 
 function loadName() {
-    document.getElementById("welcomeMsg").innerText = `Welcome ${JSON.parse(window.localStorage.getItem("user"))["name"]}!`;
+    document.getElementById("welcomeMsg").innerText = `Welcome ${userData["firstName"]}!`;
 }
 
 function loadGoals() {
 
-    // load progress bar
-    const storage = window.localStorage;
+    const goals = userData["nutritionGoals"];
+    console.log(goals);
+    let calories;
+    let fat;
+    let protein;
+    let sodium;
+    let sugar;
+    let carbohydrates;
+    let cholesterol;
     
-    let calories = JSON.parse(storage.getItem("user"))["calories"];
-    let calorieLimit = JSON.parse(storage.getItem("user"))["calorieLimit"];
+    let calorieLimit;
+    let fatLimit;
+    let proteinLimit;
+    let sodiumLimit;
+    let sugarLimit;
+    let carbohydratesLimit;
+    let cholesterolLimit;
     
-    let fat = JSON.parse(storage.getItem("user"))["fats"];
-    let fatLimit = JSON.parse(storage.getItem("user"))["fatLimit"];
+    const currentNutritionValues = userData["macroHistory"][0];
+    console.log(currentNutritionValues);
     
-    let protein = JSON.parse(storage.getItem("user"))["protein"];
-    let proteinLimit = JSON.parse(storage.getItem("user"))["proteinLimit"];
-    
-    let sodium = JSON.parse(storage.getItem("user"))["sodium"];
-    let sodiumLimit = JSON.parse(storage.getItem("user"))["sodiumLimit"];
-    
-    let sugar = JSON.parse(storage.getItem("user"))["sugar"];
-    let sugarLimit = JSON.parse(storage.getItem("user"))["sugarLimit"];
-    
-    let carbs = JSON.parse(storage.getItem("user"))["carbs"];
-    let carbsLimit = JSON.parse(storage.getItem("user"))["carbLimit"];
-    
-    let cholesterol = JSON.parse(storage.getItem("user"))["cholesterol"];
-    let cholesterolLimit = JSON.parse(storage.getItem("user"))["cholesterolLimit"];
-    
+    // if there is not macroHistory then assign default values for graphs and stuff
+    const currentDate = "TODO: INPUT DATE";
+    if(userData["macroHistory"].length === 0 /*|| userData["macroHistory"]["date"] !== currentDate*/) {
+        calories = 0;
+        fat = 0;
+        protein = 0;
+        sodium = 0;
+        sugar = 0;
+        carbohydrates = 0;
+        cholesterol = 0;
+    } else {
+        calories = currentNutritionValues["caloriesTotal"];         
+        fat = currentNutritionValues["fatTotal"];      
+        protein = currentNutritionValues["proteinTotal"];           
+        sodium = currentNutritionValues["sodiumTotal"];    
+        sugar = currentNutritionValues["sugarTotal"];
+        carbohydrates = currentNutritionValues["carbohydratesTotal"];
+        cholesterol = currentNutritionValues["cholesterolTotal"];
+    }
+
+    calorieLimit = goals["calories"];
+    fatLimit = goals["fat"];
+    proteinLimit = goals["protein"];
+    sodiumLimit = goals["sodium"];
+    sugarLimit = goals["sugar"];
+    carbohydratesLimit = goals["carbohydrates"];
+    cholesterolLimit = goals["cholesterol"];
+
+    console.log(calories, fat, protein,sodium,sugar,carbohydrates);
     //set progress bars
     let bar = document.getElementById("calorie-progress");
     let percentage = Math.floor(100 * (calories / calorieLimit));
@@ -39,7 +87,7 @@ function loadGoals() {
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("carbs-progress");
-    percentage = Math.floor(100 * (carbs / carbsLimit));
+    percentage = Math.floor(100 * (carbohydrates / carbohydratesLimit));
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
