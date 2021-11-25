@@ -10,10 +10,11 @@ import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-import { User } from './models/user.js';
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+import { User, Food } from './models/user.js';
+import puppeteer from 'puppeteer';
+import cron from 'node-cron';
 const port = process.env.PORT || 8080;
 const app = express();
 const Strategy = LocalStrategy.Strategy;
@@ -84,6 +85,7 @@ try {
         app.listen(port, () => {
             console.log(`Example app listening at http://localhost:${port}`);
         });
+        runCronJob();
     });
 }
 catch (error) {
@@ -242,11 +244,51 @@ app.post('/get-food', (req, res) => {
     res.json(menu); //return data for that dining hall, to be stored in global
 });
 
-app.post('/checkout-add', (req, res) => {
+/* CHECKOUT WITH DATABASE
+1. Add added items from checkout into "selected items"
+2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
+3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
+4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
+*/
+/* NOTES:
+1. should use user id for updating/adding? How would i get the correct user ID for updating
+
+*/
+app.post('/checkout-add', async (req, res) => {
     console.log(JSON.stringify(req.body));
-    const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
+    const checkoutObj = req.body;
+    const totalNutrients = checkoutObj.totalNutrients;
+    console.log(checkoutObj);
+    const query = User.find({email: checkoutObj.email});
+    const result = await query.exec();
+    const user = result[0];
+    console.log(user);
+    const macroHistory =  user["macroHistory"][0];
+
+    macroHistory["caloriesTotal"] += totalNutrients["calories"];
+    macroHistory["proteinTotal"] += totalNutrients["protein"];
+    macroHistory["carbohydratesTotal"] += totalNutrients["carbohydrates"];
+    macroHistory["cholesterolTotal"] += totalNutrients["cholesterol"];
+    macroHistory["fatTotal"] += totalNutrients["fat"];
+    macroHistory["sugarTotal"] += totalNutrients["sugar"];
+    macroHistory["sodiumTotal"] += totalNutrients["sodium"];
+
+    const macroArray = [macroHistory];
+    /*for(let i = 1; i < macroHistory.length; i++){
+        macroHistory[] += totalNutrients[i-1];
+    }*/
+    User.updateOne({email: checkoutObj.email}, {$set: {
+        macroHistory: macroArray
+    }})
     res.json(json);
 });
+
+
+
+app.get('/home', (req, res) => {
+    res.sendFile(__dirname + "/public/home.html");
+});
+
 
 // update Profile Daily Values
 app.get("/profile", (req, res) => {
@@ -295,3 +337,82 @@ app.post('/user/schema', async (req, res) => {
     res.send(data);
     
 });
+
+async function retrieveDiningHallFood() {
+    const browser = await puppeteer.launch({headless: true});
+    const page = await browser.newPage();
+    //final dining hall data for the day
+    let diningHallFoodData = {};
+    //information of each dining hall and the respective url to visit
+    let diningHalls = [
+        {'name': "Berkshire", "url": 'https://umassdining.com/locations-menus/berkshire/menu'},
+        {'name': "Worcester", "url": 'https://umassdining.com/locations-menus/worcester/menu'},
+        {'name': "Franklin", "url": 'https://umassdining.com/locations-menus/franklin/menu'},
+        {'name': "Hampshire", "url": 'https://umassdining.com/locations-menus/hampshire/menu'}
+    ];
+
+    for (const diningHall of diningHalls) {
+        await page.goto(diningHall["url"], {waitUntil: 'networkidle2'});
+        //store all of the meals for the dining hall
+        let diningHallMealNames = await page.$$eval("ul.etabs > li.tab", (mealTabs) => {
+            return mealTabs.map(tab => tab.getAttribute("aria-controls"));
+        });
+        //check if the dining hall is closed
+        if (diningHallMealNames.length <= 1) {
+            diningHallFoodData[diningHall['name']] = "Closed";
+            continue;
+        } else {
+            let diningHallFood = {};
+            for (let i = 0; i < diningHallMealNames.length; i++) {
+                //retrieve the food name and nutrional data for the specific dining hall
+                let foodItems = await page.$$eval(`#${diningHallMealNames[i]} a`, (items) => {
+                    return items.map(x => {
+                        let nutritionObj = {};
+                        nutritionObj["calories"] = parseInt(x.getAttribute("data-calories"));
+                        //remove the units from the string before converting to a number for each nutrient below
+                        nutritionObj["fat"] = parseInt(x.getAttribute("data-total-fat").replace("g", ""));
+                        nutritionObj["cholesterol"] = parseInt(x.getAttribute("data-cholesterol").replace("mg", ""));
+                        nutritionObj["sodium"] = parseInt(x.getAttribute("data-sodium").replace("mg", ""));
+                        nutritionObj["carbohydrates"] = parseInt(x.getAttribute("data-total-carb").replace("g", ""));
+                        nutritionObj["sugar"] = parseInt(x.getAttribute("data-sugars").replace("g", ""));
+                        nutritionObj["protein"] = parseInt(x.getAttribute("data-protein").replace("g", ""));
+                        return {"foodName": x.getAttribute("data-dish-name"), "nutritionFacts": nutritionObj};
+                    });
+                });
+                //store the meal and all the associated foods
+                diningHallFood[diningHallMealNames[i]] = foodItems;
+            }
+            //store all the meals for the day for each dining hall
+            diningHallFoodData[diningHall['name']] = diningHallFood;
+        } 
+    }
+    await browser.close();
+    return diningHallFoodData;
+}
+
+//Retrieves the dining hall food at 3AM each day for each dining hall and stores the food data in the database
+function runCronJob() {
+    cron.schedule('0 3 * * *', async () => {
+        //Runs the job at 03:00 AM at America/New_York timezone
+        const food = await retrieveDiningHallFood();
+        //check if retrieveDiningHallFood failed
+        if (JSON.stringify(food) === '{}') {
+            console.log("Failed to retrieve food from the dining halls");
+        }
+        const diningHallFoods = new Food({
+            Berkshire: food['Berkshire'],
+            Worcester: food['Worcester'],
+            Franklin: food['Franklin'],
+            Hampshire: food['Hampshire']
+        });
+        //clear the collection before adding to it
+        await Food.deleteMany();
+        //update the Foods collection
+        diningHallFoods.save(function (err) {
+            if (err) console.log(err);
+        });
+    }, {
+        scheduled: true,
+        timezone: "America/New_York"
+    });
+} 

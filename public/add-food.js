@@ -23,29 +23,37 @@ worcesterButton.addEventListener('click', foodTableUpdate);
 berkshireButton.addEventListener('click', foodTableUpdate);
 hampshireButton.addEventListener('click', foodTableUpdate);
 
-window.onload = function() {
-  frankButton.click();
+// CurrentMenu: Object holds values for all dining halls and meal times. Hall Buttons should grab their respective hall values
+// hallMenu: menu for the current dining hall. Should change when clicking a dining hall button, by moving info from currentMenu
+let currentMenu = {}; 
+let hallMenu = {}; 
+
+//On load: Get food object from DB, put into "currentMenu" object
+window.onload = async function() {
+
+  const apiLink = "http://localhost:8080/get-food/" 
+      
+      let output = "";
+
+      const response = await fetch(apiLink)
+
+      if (response.ok) {
+          const userJSON = await response.json();
+          currentMenu = userJSON; 
+          frankButton.click();
+          breakfastButton.click(); //default shows breakfast for the dininghall so its not empty
+          
+      } else {
+          console.log("fail");
+          output = "fail";
+      }  
 }
 
-/* Rough draft of how to get data
-1. Each dining hall button has endpoint
-2. That endpoint will grab that dining hall's data, including food
-3. Data put into a global object 
-4. Upon clicking a meal time button, find time in global object, add all foods into table
-5. ???
-6. profit
-*/
-//FOR NOW: get used to mongoose/Plan around mongoose. note: all mongoose stuff should be thru server
 
-/*Two types of buttons: 1. dining hall button 2. meal button
-If pressing dining hall button, make db request for that dining hall's values, store in some value
 
-If meal, display all food items for that meal (or just food for now)
-
-*/
-let currentMenu = {};
-
+//Onload: get food object from DB, parse, put into currentMenu
 async function foodTableUpdate(event){
+
   foodTableClear();
   const buttonType = event.currentTarget.id;
   const mealButtons = ["breakfastBtn", "lunchBtn", "dinnerBtn", "grabBtn"];
@@ -54,54 +62,49 @@ async function foodTableUpdate(event){
   //Clicking a meal button. Should parse from global object that stores last clicked dining hall button.
   if(mealButtons.includes(buttonType)){
     
-    if(buttonType === "breakfastBtn"){
+    //For each button: check if the menu exists in for the current dininghall
+    if(buttonType === "breakfastBtn" && hallMenu.breakfast_menu){ 
+      for(let i = 0; i < hallMenu.breakfast_menu.length; i++) {
+        foodTableAdd(hallMenu.breakfast_menu[i].foodName);
+      }
+      //console.log(hallMenu.breakfast_menu[0].foodName); //this gets first food name in hall's breakfast menu
       
-     // console.log("breakfast items: " + JSON.stringify(breakfastItems));
-      for(let food of currentMenu["breakfast"]){
-        foodTableAdd(food);
-      }
-    } else if(buttonType === "lunchBtn"){
-      for(let food of currentMenu["lunch"]){
-        foodTableAdd(food);
+    } else if(buttonType === "lunchBtn" && hallMenu.lunch_menu){
+      for(let i = 0; i < hallMenu.lunch_menu.length; i++) {
+        foodTableAdd(hallMenu.lunch_menu[i].foodName);
       }
 
-    } else if(buttonType === "dinnerBtn"){
-      for(let food of currentMenu["dinner"]){
-        foodTableAdd(food);
+    } else if(buttonType === "dinnerBtn" && hallMenu.dinner_menu){
+      for(let i = 0; i < hallMenu.dinner_menu.length; i++) {
+        foodTableAdd(hallMenu.dinner_menu[i].foodName);
       }
-    } else if(buttonType === "grabBtn"){
-      for(let food of currentMenu["grab"]){
-        foodTableAdd(food);
+    } else if(buttonType === "grabBtn" && hallMenu.grabngo){
+      for(let i = 0; i < hallMenu.grabngo.length; i++) {
+        foodTableAdd(hallMenu.grabngo[i].foodName);
       }
-    }
-    //clicking on a dining hall button: either do if else for each, or send a string indicating which hall to endpoint
+    } //else: display "not available"
+    
+    //When clicking a dininghall button: update hallMenu (which meal buttons use), and display lunch(so table isn't empty)
   } else if(diningHalls.includes(buttonType)){
-
-      const apiLink = "http://localhost:8080/get-food/" 
-      const myobj = {diningHall: buttonType}; //we don't want to send anything
-      let output = "";
-
-      const response = await fetch(apiLink , {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-          },
-          body: JSON.stringify(myobj)
-        });
-
-      if (response.ok) {
-          const userJSON = await response.json();
-          currentMenu = userJSON; 
-          breakfastButton.click(); //default shows breakfast
-          
-      } else {
-          console.log("fail");
-          output = "fail";
-      }
-  } else {
-    console.log("error");
+      if(buttonType === "frank"){
+        //console.log(currentMenu.Franklin);
+        hallMenu = currentMenu.Franklin;
+        lunchButton.click();
+        //console.log(hallMenu);
+        //console.log(JSON.stringify(hallMenu));
+      } else if(buttonType === "worcester") {
+          hallMenu = currentMenu.Worcester;
+          lunchButton.click();
+      } else if(buttonType === "berkshire") {
+          hallMenu = currentMenu.Berkshire;
+          lunchButton.click();
+      } else if(buttonType === "hampshire") {
+          hallMenu = currentMenu.Hampshire;
+          lunchButton.click();
+      } 
+      
+      
   }
-  //console.log("today's menu: " + JSON.stringify(currentMenu));
 }
 
 /*
@@ -155,8 +158,6 @@ function foodTableClear() {
   }
 }
 
-
-
 //TODO: Add numbers next to each item
 function toggleCheckbox(item) {
   /* if an item is checked and clicked on, add row and insert cell of item name */
@@ -187,22 +188,21 @@ function toggleCheckbox(item) {
   }
 }
 
-/* On Checkout button click:
-1. take items in names of selected items
-2. send names to endpoint
-3. get a json of combined nutrient values
-4. add nutrient values to local storage
+/* CHECKOUT WITH DATABASE
+1. Add the checkout items into object, selectedItems, which has form {"foodname":amount}
+2. For each item in selectedItems, find where it is is currentMenu, and add each nutrient to totalNutrients
+
+3??
 */
 
 async function foodCheckout() {
     
     let output = "";
     let selectedList = {};
-
+    let totalNutrients = {"calories": 0, "protein": 0, "carbohydrates": 0, "cholesterol": 0, "fat": 0, "sugar": 0, "sodium": 0};
     /* Loop through checkout table. For each row/cell, add to selectedList.
     Then, uncheck all boxes. */
     
-
     const table = document.getElementById("checkoutTable");
     const rows = table.rows;
     for(let i = 0; i < rows.length; i++){ 
@@ -212,9 +212,9 @@ async function foodCheckout() {
       for(let j = 0; j < cells.length; j++){
         const foodEntry = cells[j].textContent;
         if(selectedList[foodEntry]) {
-          selectedList[foodEntry] += 100;   //if multiples exist, add to existing entry
+          selectedList[foodEntry] += 1;   //if multiples exist, add to existing entry
         } else {
-          selectedList[foodEntry] = 100;  //otherwise, create new entry
+          selectedList[foodEntry] = 1;  //otherwise, create new entry
         }
         
       }
@@ -227,44 +227,55 @@ async function foodCheckout() {
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
+    
+    for(let k1 in hallMenu){
 
-    let apiLink = "http://localhost:8080/checkout-add/" 
-
-    /* TODO: if selectedList is empty, don't send request. Otherwise, spamming checkout button increases values.
-    This could also be handled by the server, but probably bad idea. */
-
-    const response = await fetch(apiLink , {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-        body: JSON.stringify(selectedList)
-      });
-
-    // Ensure response was successful
-    if (response.ok) {
-        const userJSON = await response.json();
-        output = userJSON; 
-        console.log("success");
-    } else {
-        console.log("fail");
-        output = "fail";
+      for(let k2 in hallMenu[k1]){
+        
+        let currFoodName = hallMenu[k1][k2].foodName;
+        
+        if(selectedList[currFoodName]){
+        
+          let nutrients = hallMenu[k1][k2].nutritionFacts;
+          for(let k3 in nutrients){
+            
+            totalNutrients[k3] += nutrients[k3];
+          }
+          
+        }
+      }
     }
 
-    /* For each item in "output":
-        1. if the item does not exist in localstorage, initialize to 0
-        2. otherwise, add it to the existing count  
-    */
+    const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
+    
 
-    for(let key in output){
-      let storedValue = storage.getItem(key);
-      if(!storedValue){ //item doesn't exist yet, set to 0
-          storage.setItem(key, 0);
-          storedValue = 0;
+    if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
+      let apiLink = "http://localhost:8080/checkout-add/" 
+      
+      const response = await fetch(apiLink , {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json;charset=utf-8'
+          },
+          body: JSON.stringify(checkoutObj)
+        });
+
+      
+      if (response.ok) {
+          const userJSON = await response.json();
+          output = userJSON; 
+          console.log("success");
+      } else {
+          console.log("fail");
+          output = "fail";
       }
-      const newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
-      storage.setItem(key, newValue); //update storage
 
+      /* For each item in "output":
+          1. if the item does not exist in localstorage, initialize to 0
+          2. otherwise, add it to the existing count  
+      */
+      //should be obsolete when updating food thru database
+    
     }
 }
 
