@@ -1,22 +1,22 @@
 'use strict';
 
-const createAccountButton = document.getElementById("create-account-button");
-createAccountButton.addEventListener("click", sendAccountData);
-
 async function sendAccountData() {
-    let apiLink = "http://localhost:8080/create/account";
+    let endpoint = "http://localhost:8080/create-account";
 
     const accountInfo = getAccountInfo();
-
-    const response = await fetch(apiLink , {
+    console.log("SENDING ACCOUNT DATA");
+    const response = await fetch(endpoint , {
         method: 'POST',
         body: accountInfo,
         headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
+          'Content-Type': 'application/json'
+        }
     });
 
-    console.log(response.ok);
+    console.log(response.status);
+    if(!response.ok) {
+       alert("could not create account");
+    } 
 }
 
 function getAccountInfo() {
@@ -26,6 +26,9 @@ function getAccountInfo() {
     const username = document.getElementById("input-username").value;
     const password = document.getElementById("input-password").value;
 
-    const accountJSON = {"firstName": firstName, "lastName": lastName, "email": email, "username": username, "password": password};
+    const accountJSON = {fname: firstName, lname: lastName, email: email, username: username, password: password};
     return JSON.stringify(accountJSON);
 }
+
+const createAccountButton = document.getElementById("create-account-button");
+createAccountButton.addEventListener("click", () => sendAccountData());
