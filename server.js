@@ -74,7 +74,7 @@ function checkLoggedIn(req, res, next) {
 }
 //LEAVE ROOM FOR DATABASE STUFF
 
-const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
+const pass = process.env.PASSWORD;
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
