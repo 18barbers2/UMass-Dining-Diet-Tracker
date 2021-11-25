@@ -222,27 +222,22 @@ app.get('/checkout-food', (req, res) => {
 });
 
 // Recieves simple object of form {dinginHall: "name"}. Should be used to grab correct food from DB based on name
-app.post('/get-food', (req, res) => {
-    //console.log("get-food: " + JSON.stringify(req.body));
-    const hall = req.body.diningHall;
-    let menu = {};
-    //each block should grab different info. or, we grab info above and parse in the block
-    if(hall === "frank") {
-        console.log("get-food: frank");
-        menu = {breakfast: ["pancakes", "eggs"], lunch: ["sandwich", "coleslaw"], dinner: ["steak", "ramen"], grab: ["wings"]} //parsing depends on how item is retrieved
-    } else if(hall === "worcester"){
-        console.log("get-food: worcester");
-        menu = {breakfast: ["hashbrowns", "fried egg"], lunch: ["salad", "bahn mi"], dinner: ["salmon", "buns"], grab: ["soda"]}
-    } else if(hall === "berkshire") {
-        console.log("get-food: berk");
-        menu = {breakfast: ["breakfast burrito", "bagel"], lunch: ["mac n cheese", "cobb salad"], dinner: ["stir fry", "mushrooms"], grab: ["wrap"]}
-    } else if(hall === "hampshire"){
-        
-        menu = {breakfast: ["waffles", "croissant"], lunch: ["mcdonalds", "coffee"], dinner: ["shrimp", "pasta"], grab: ["chicken and rice"]}
-        console.log("get-food: hamp");
-    }
-    res.json(menu); //return data for that dining hall, to be stored in global
+app.get('/get-food', (req, res) => {
+    
+    
+    let menu = Food.findOne(function (error, docs) {
+        if(error) {
+            console.log("ERROR FETCHING USER DATA");
+        }
+        else {
+            //console.log(docs.Berkshire);
+            res.send(docs);
+        }
+    });
+   // console.log(JSON.stringify(dbFood));
+    
 });
+
 
 /* CHECKOUT WITH DATABASE
 1. Add added items from checkout into "selected items"
@@ -274,13 +269,10 @@ app.post('/checkout-add', async (req, res) => {
     macroHistory["sodiumTotal"] += totalNutrients["sodium"];
 
     const macroArray = [macroHistory];
-    /*for(let i = 1; i < macroHistory.length; i++){
-        macroHistory[] += totalNutrients[i-1];
-    }*/
-    User.updateOne({email: checkoutObj.email}, {$set: {
+    console.log("MACRO ARRAY", macroArray);
+    await User.updateOne({email: checkoutObj.email}, {$set: {
         macroHistory: macroArray
-    }})
-    res.json(json);
+    }});
 });
 
 
