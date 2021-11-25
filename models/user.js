@@ -6,6 +6,7 @@ const userSchema = new Schema({
     firstName: String,
     lastName: String,
     email: String,
+    password: [String, String],
     macroHistory: [{
         date: String,
         caloriesTotal: Number,
@@ -26,7 +27,7 @@ const userSchema = new Schema({
         sodium: Number,
         sugar: Number
     }
-});
+}, );
 
 const User = mongoose.model('User', userSchema);
 
