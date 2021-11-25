@@ -5,7 +5,7 @@ dotenv.config();
 import expressSession from 'express-session';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
-import minicrypt from './miniCrypt.js';
+import minicrypt from './public/miniCrypt.js';
 import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
