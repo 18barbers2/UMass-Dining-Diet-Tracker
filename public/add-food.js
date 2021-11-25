@@ -23,30 +23,35 @@ worcesterButton.addEventListener('click', foodTableUpdate);
 berkshireButton.addEventListener('click', foodTableUpdate);
 hampshireButton.addEventListener('click', foodTableUpdate);
 
-//On load, show frank's menu so its not empty
-window.onload = function() {
-  frankButton.click();
+// CurrentMenu: Object holds values for all dining halls and meal times. Hall Buttons should grab their respective hall values
+// hallMenu: menu for the current dining hall. Should change when clicking a dining hall button, by moving info from currentMenu
+let currentMenu = {}; 
+let hallMenu = {}; 
+
+//On load: Get food object from DB, put into "currentMenu" object
+window.onload = async function() {
+
+  const apiLink = "http://localhost:8080/get-food/" 
+      
+      let output = "";
+
+      const response = await fetch(apiLink)
+
+      if (response.ok) {
+          const userJSON = await response.json();
+          currentMenu = userJSON; 
+          frankButton.click();
+          breakfastButton.click(); //default shows breakfast for the dininghall so its not empty
+          
+      } else {
+          console.log("fail");
+          output = "fail";
+      }  
 }
 
-/* Rough draft of how to get data
-1. Each dining hall button has endpoint
-2. That endpoint will grab that dining hall's data, including food
-3. Data put into a global object 
-4. Upon clicking a meal time button, find time in global object, add all foods into table
-5. ???
-6. profit
-*/
-//FOR NOW: get used to mongoose/Plan around mongoose. note: all mongoose stuff should be thru server
 
-/*Two types of buttons: 1. dining hall button 2. meal button
-If pressing dining hall button, make db request for that dining hall's values, store in some value
 
-If meal, display all food items for that meal (or just food for now)
-
-*/
-//object holds menu of last clicked dining hall
-let currentMenu = {};
-
+//Onload: get food object from DB, parse, put into currentMenu
 async function foodTableUpdate(event){
   foodTableClear();
   const buttonType = event.currentTarget.id;
@@ -56,55 +61,49 @@ async function foodTableUpdate(event){
   //Clicking a meal button. Should parse from global object that stores last clicked dining hall button.
   if(mealButtons.includes(buttonType)){
     
-    if(buttonType === "breakfastBtn"){
-      
-     //If clicking a meal button, add from menu to the food display table
-      for(let food of currentMenu["breakfast"]){
-        foodTableAdd(food);
+    
+    if(buttonType === "breakfastBtn" && hallMenu.breakfast_menu){
+      for(let i = 0; i < hallMenu.breakfast_menu.length; i++) {
+        foodTableAdd(hallMenu.breakfast_menu[i].foodName);
       }
-    } else if(buttonType === "lunchBtn"){
-      for(let food of currentMenu["lunch"]){
-        foodTableAdd(food);
+      //console.log(hallMenu.breakfast_menu[0].foodName); //this gets first food name in hall's breakfast menu
+      
+    } else if(buttonType === "lunchBtn" && hallMenu.lunch_menu){
+      for(let i = 0; i < hallMenu.lunch_menu.length; i++) {
+        foodTableAdd(hallMenu.lunch_menu[i].foodName);
       }
 
-    } else if(buttonType === "dinnerBtn"){
-      for(let food of currentMenu["dinner"]){
-        foodTableAdd(food);
+    } else if(buttonType === "dinnerBtn" && hallMenu.dinner_menu){
+      for(let i = 0; i < hallMenu.dinner_menu.length; i++) {
+        foodTableAdd(hallMenu.dinner_menu[i].foodName);
       }
-    } else if(buttonType === "grabBtn"){
-      for(let food of currentMenu["grab"]){
-        foodTableAdd(food);
+    } else if(buttonType === "grabBtn" && hallMenu.grabngo){
+      for(let i = 0; i < hallMenu.grabngo.length; i++) {
+        foodTableAdd(hallMenu.grabngo[i].foodName);
       }
     }
-    //clicking on a dining hall button: either do if else for each, or send a string indicating which hall to endpoint
+    
+
   } else if(diningHalls.includes(buttonType)){
-
-      //Send a object to server, which will respond with the menu for that dining hall
-      const apiLink = "http://localhost:8080/get-food/" 
-      const myobj = {diningHall: buttonType}; //we don't want to send anything
-      let output = "";
-
-      const response = await fetch(apiLink , {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json;charset=utf-8'
-          },
-          body: JSON.stringify({})
-        });
-
-      if (response.ok) {
-          const userJSON = await response.json();
-          currentMenu = userJSON; 
-          breakfastButton.click(); //default shows breakfast for the dininghall so its not empty
-          
-      } else {
-          console.log("fail");
-          output = "fail";
-      }
-  } else {
-    console.log("error");
+      if(buttonType === "frank"){
+        //console.log(currentMenu.Franklin);
+        hallMenu = currentMenu.Franklin;
+        lunchButton.click();
+        //console.log(hallMenu);
+        //console.log(JSON.stringify(hallMenu));
+      } else if(buttonType === "worcester") {
+          hallMenu = currentMenu.Worcester;
+          lunchButton.click();
+      } else if(buttonType === "berkshire") {
+          hallMenu = currentMenu.Berkshire;
+          lunchButton.click();
+      } else if(buttonType === "hampshire") {
+          hallMenu = currentMenu.Hampshire;
+          lunchButton.click();
+      } 
+      //If pressing dining hall button, set global var equal to a string/enum, which meal buttons will use
+      
   }
-  
 }
 
 /*
@@ -195,8 +194,6 @@ function toggleCheckbox(item) {
 2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
 3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
 4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
-5. done
-
 */
 
 async function foodCheckout() {
