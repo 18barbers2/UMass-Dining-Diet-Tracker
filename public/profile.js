@@ -4,13 +4,13 @@ async function updateDailyGoals() {
     
     const dailyGoals = JSON.stringify(getDailyGoalValues());
 
-    let apiLink = "http://localhost:8080/profile";
-    await fetch(apiLink, {
+    let endpoint = "http://localhost:8080/profile";
+    await fetch(endpoint, {
         method: 'POST',
         body: dailyGoals,
         headers: {
             'Content-Type': 'application/json'
-        },
+        }
     });
 
 }
