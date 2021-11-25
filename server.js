@@ -51,6 +51,8 @@ app.get('/checkout-food', (req, res) => {
 /* Grabs menu from DB, send back to add-food.js. Should send in json format.
 1. Get full menu across dining halls from
 */
+
+
 app.get('/get-food', (req, res) => {
     
     
@@ -60,7 +62,6 @@ app.get('/get-food', (req, res) => {
         }
         else {
             //console.log(docs.Berkshire);
-
             res.send(docs);
         }
     });
@@ -68,21 +69,6 @@ app.get('/get-food', (req, res) => {
     
 });
 
-app.post('/get-food', (req, res) => {
-    
-    let menu = {};
-    menu = Food.find({}, function (error, docs) {
-        if(error) {
-            console.log("ERROR FETCHING USER DATA");
-        }
-        else {
-            console.log(docs);
-            return docs[0];
-        }
-    });
-   // console.log(JSON.stringify(dbFood));
-    res.json(menu); //return data for that dining hall, to be stored in global
-});
 /* CHECKOUT WITH DATABASE
 1. Add added items from checkout into "selected items"
 2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
@@ -93,9 +79,32 @@ app.post('/get-food', (req, res) => {
 1. should use user id for updating/adding? How would i get the correct user ID for updating
 
 */
-app.post('/checkout-add', (req, res) => {
+app.post('/checkout-add', async (req, res) => {
     console.log(JSON.stringify(req.body));
-    const json = {"calories": 500, "carbohydrates": 30, "fat": 25, "sodium": 200, "cholesterol": 40, "sugar": 35, "protein": 70};
+    const checkoutObj = req.body;
+    const totalNutrients = checkoutObj.totalNutrients;
+    console.log(checkoutObj);
+    const query = User.find({email: checkoutObj.email});
+    const result = await query.exec();
+    const user = result[0];
+    console.log(user);
+    const macroHistory =  user["macroHistory"][0];
+
+    macroHistory["caloriesTotal"] += totalNutrients["calories"];
+    macroHistory["proteinTotal"] += totalNutrients["protein"];
+    macroHistory["carbohydratesTotal"] += totalNutrients["carbohydrates"];
+    macroHistory["cholesterolTotal"] += totalNutrients["cholesterol"];
+    macroHistory["fatTotal"] += totalNutrients["fat"];
+    macroHistory["sugarTotal"] += totalNutrients["sugar"];
+    macroHistory["sodiumTotal"] += totalNutrients["sodium"];
+
+    const macroArray = [macroHistory];
+    /*for(let i = 1; i < macroHistory.length; i++){
+        macroHistory[] += totalNutrients[i-1];
+    }*/
+    User.updateOne({email: checkoutObj.email}, {$set: {
+        macroHistory: macroArray
+    }})
     res.json(json);
 });
 
@@ -296,6 +305,9 @@ function runCronJob() {
             Franklin: food['Franklin'],
             Hampshire: food['Hampshire']
         });
+        //clear the collection before adding to it
+        await Food.deleteMany();
+        //update the Foods collection
         diningHallFoods.save(function (err) {
             if (err) console.log(err);
         });

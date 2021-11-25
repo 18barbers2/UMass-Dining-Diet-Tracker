@@ -53,6 +53,7 @@ window.onload = async function() {
 
 //Onload: get food object from DB, parse, put into currentMenu
 async function foodTableUpdate(event){
+
   foodTableClear();
   const buttonType = event.currentTarget.id;
   const mealButtons = ["breakfastBtn", "lunchBtn", "dinnerBtn", "grabBtn"];
@@ -61,8 +62,8 @@ async function foodTableUpdate(event){
   //Clicking a meal button. Should parse from global object that stores last clicked dining hall button.
   if(mealButtons.includes(buttonType)){
     
-    
-    if(buttonType === "breakfastBtn" && hallMenu.breakfast_menu){
+    //For each button: check if the menu exists in for the current dininghall
+    if(buttonType === "breakfastBtn" && hallMenu.breakfast_menu){ 
       for(let i = 0; i < hallMenu.breakfast_menu.length; i++) {
         foodTableAdd(hallMenu.breakfast_menu[i].foodName);
       }
@@ -81,9 +82,9 @@ async function foodTableUpdate(event){
       for(let i = 0; i < hallMenu.grabngo.length; i++) {
         foodTableAdd(hallMenu.grabngo[i].foodName);
       }
-    }
+    } //else: display "not available"
     
-
+    //When clicking a dininghall button: update hallMenu (which meal buttons use), and display lunch(so table isn't empty)
   } else if(diningHalls.includes(buttonType)){
       if(buttonType === "frank"){
         //console.log(currentMenu.Franklin);
@@ -101,7 +102,7 @@ async function foodTableUpdate(event){
           hallMenu = currentMenu.Hampshire;
           lunchButton.click();
       } 
-      //If pressing dining hall button, set global var equal to a string/enum, which meal buttons will use
+      
       
   }
 }
@@ -157,8 +158,6 @@ function foodTableClear() {
   }
 }
 
-
-
 //TODO: Add numbers next to each item
 function toggleCheckbox(item) {
   /* if an item is checked and clicked on, add row and insert cell of item name */
@@ -190,17 +189,17 @@ function toggleCheckbox(item) {
 }
 
 /* CHECKOUT WITH DATABASE
-1. Add added items from checkout into "selected items"
-2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
-3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
-4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
+1. Add the checkout items into object, selectedItems, which has form {"foodname":amount}
+2. For each item in selectedItems, find where it is is currentMenu, and add each nutrient to totalNutrients
+
+3??
 */
 
 async function foodCheckout() {
     
     let output = "";
     let selectedList = {};
-
+    let totalNutrients = {"calories": 0, "protein": 0, "carbohydrates": 0, "cholesterol": 0, "fat": 0, "sugar": 0, "sodium": 0};
     /* Loop through checkout table. For each row/cell, add to selectedList.
     Then, uncheck all boxes. */
     
@@ -228,7 +227,29 @@ async function foodCheckout() {
     for(let i = 0; i < checkoutHeaders.length; i++) {
       checkoutHeaders[i].checked = false;
     }
-    if(Object.keys(selectedList).length !== 0){
+    
+    for(let k1 in hallMenu){
+
+      for(let k2 in hallMenu[k1]){
+        
+        let currFoodName = hallMenu[k1][k2].foodName;
+        
+        if(selectedList[currFoodName]){
+        
+          let nutrients = hallMenu[k1][k2].nutritionFacts;
+          for(let k3 in nutrients){
+            
+            totalNutrients[k3] += nutrients[k3];
+          }
+          
+        }
+      }
+    }
+
+    const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
+    
+
+    if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
       let apiLink = "http://localhost:8080/checkout-add/" 
       
       const response = await fetch(apiLink , {
@@ -236,10 +257,10 @@ async function foodCheckout() {
           headers: {
             'Content-Type': 'application/json;charset=utf-8'
           },
-          body: JSON.stringify(selectedList)
+          body: JSON.stringify(checkoutObj)
         });
 
-      // Ensure response was successful
+      
       if (response.ok) {
           const userJSON = await response.json();
           output = userJSON; 
@@ -254,16 +275,7 @@ async function foodCheckout() {
           2. otherwise, add it to the existing count  
       */
       //should be obsolete when updating food thru database
-      for(let key in output){
-        let storedValue = storage.getItem(key);
-        if(!storedValue){ //item doesn't exist yet, set to 0
-            storage.setItem(key, 0);
-            storedValue = 0;
-        }
-        const newValue = parseInt(storage.getItem(key)) +  parseInt(output[key]); //add new value to value in storage
-        storage.setItem(key, newValue); //update storage
-
-      }
+    
     }
 }
 
