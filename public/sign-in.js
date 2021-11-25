@@ -2,6 +2,7 @@
 
 const loginButton = document.getElementById("login-button");
 loginButton.addEventListener('click', () => loginUser());
+
 // const loginButton = document.getElementById("login-button");
 // loginButton.addEventListener('click', updateName);
 
@@ -36,6 +37,18 @@ async function loginUser() {
         headers: {'Content-Type': 'application/json'}
     });
 
-    console.log(response);
+    alert(response.ok);
+    if(response.ok) {
+        window.location.href = "/home";
+        const userJSON = await response.json();
+        const userEmail = userJSON["email"];
+
+        const storage = window.localStorage;
+        storage.setItem("userEmail", userEmail);
+    }
+    else {
+        window.location.href = "/sign-in";
+    }
+    //console.log(response);
 }
 
