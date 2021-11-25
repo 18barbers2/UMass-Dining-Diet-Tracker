@@ -4,7 +4,7 @@ async function updateDailyGoals() {
     
     const dailyGoals = JSON.stringify(getDailyGoalValues());
 
-    let endpoint = "http://localhost:8080/profile";
+    let endpoint = `http://localhost:${process.env.PORT || 8080}profile`;
     await fetch(endpoint, {
         method: 'POST',
         body: dailyGoals,

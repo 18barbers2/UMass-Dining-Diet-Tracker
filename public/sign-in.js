@@ -29,7 +29,7 @@ async function loginUser() {
     const password = document.getElementById("password").value;
     const credentials = JSON.stringify({email: emailAddress, password: password});
     
-    const endpoint = 'http://localhost:8080/sign-in';
+    const endpoint = `http://localhost:${process.env.PORT || 8080}/sign-in`;
 
     const response = await fetch(endpoint, {
         method: 'POST',

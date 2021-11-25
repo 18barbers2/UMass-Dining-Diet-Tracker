@@ -14,7 +14,7 @@ async function loadData() {
 
     console.log(window.localStorage.getItem("userEmail"));
     let userEmailJson = {"email": window.localStorage.getItem("userEmail")};
-    const response = await fetch('http://localhost:8080/user/schema', {
+    const response = await fetch(`http://localhost:${process.env.PORT || 8080}/user/schema`, {
         method: "POST", 
         body: JSON.stringify(userEmailJson),
         headers: {'Content-type': 'application/json'}

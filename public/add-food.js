@@ -187,7 +187,7 @@ async function foodCheckout() {
     }
     const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
     if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
-      let apiLink = "http://localhost:8080/checkout-add/"
+      let apiLink = `http://localhost:${process.env.PORT || 8080}/checkout-add/`
       const response = await fetch(apiLink , {
           method: 'POST',
           headers: {
