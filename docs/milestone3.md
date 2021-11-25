@@ -1,8 +1,6 @@
-### Documentation for Database
-
-Database Schema
-
-## user document 
+# Documentation for Database
+Schema
+# user document 
 {
 	_id: <ObjectId1>,
 	username: String, // the user’s name
@@ -14,13 +12,13 @@ Database Schema
 	nutritionGoals: Object // a document with the users preferred nutritional goals
 }
 
-## foodHistory document
+## macroHistory document
 {
 	date: String, // the specific date for this document
 	macros: <MacroDocument> // a document with all the nutritional values the user has for the date.	
 }
 
-## macro document 
+## macroHistory` document 
 {
 	calorieTotal: integer, // the total number of calories consumed for this day
 	carbohydratesTotal: integer, // the total number of carbohydrates consumed for this day
