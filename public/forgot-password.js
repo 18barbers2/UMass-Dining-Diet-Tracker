@@ -4,7 +4,7 @@ const forgotpasswordButton = document.getElementById("resetPassButton");
 forgotpasswordButton.addEventListener("click", resetPassword);
 
 async function resetPassword() {
-    let apiLink = "http://localhost:8080/delete/password";
+    let apiLink = `http://localhost:${process.env.PORT || 8080}/delete/password`;
 
     const emailJSON = JSON.stringify({"email": document.getElementById("resetEmail").value});
 

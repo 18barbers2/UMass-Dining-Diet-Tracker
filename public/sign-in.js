@@ -2,6 +2,7 @@
 
 const loginButton = document.getElementById("login-button");
 loginButton.addEventListener('click', () => loginUser());
+
 // const loginButton = document.getElementById("login-button");
 // loginButton.addEventListener('click', updateName);
 
@@ -28,7 +29,7 @@ async function loginUser() {
     const password = document.getElementById("password").value;
     const credentials = JSON.stringify({email: emailAddress, password: password});
     
-    const endpoint = 'http://localhost:8080/sign-in';
+    const endpoint = `http://localhost:${process.env.PORT || 8080}/sign-in`;
 
     const response = await fetch(endpoint, {
         method: 'POST',
@@ -36,7 +37,18 @@ async function loginUser() {
         headers: {'Content-Type': 'application/json'}
     });
 
-    console.log(response);
-    window.location.href = '/home';
+    alert(response.ok);
+    if(response.ok) {
+        window.location.href = "/home";
+        const userJSON = await response.json();
+        const userEmail = userJSON["email"];
+
+        const storage = window.localStorage;
+        storage.setItem("userEmail", userEmail);
+    }
+    else {
+        window.location.href = "/sign-in";
+    }
+    //console.log(response);
 }
 
