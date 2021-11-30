@@ -1,7 +1,7 @@
 'use strict';
 
 async function sendAccountData() {
-    let endpoint = `http://localhost:${process.env.PORT || 8080}/create-account`;
+    let endpoint = `/create-account`;
 
     const accountInfo = getAccountInfo();
     console.log("SENDING ACCOUNT DATA");

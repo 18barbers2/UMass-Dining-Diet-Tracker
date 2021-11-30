@@ -22,7 +22,7 @@ let currentMenu = {};
 let hallMenu = {};
 //On load: Get food object from DB, put into "currentMenu" object
 window.onload = async function() {
-  const apiLink = "http://localhost:8080/get-food/"
+  const apiLink = "/get-food/"
       let output = "";
       const response = await fetch(apiLink)
       if (response.ok) {
@@ -187,7 +187,7 @@ async function foodCheckout() {
     }
     const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
     if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
-      let apiLink = `http://localhost:${process.env.PORT || 8080}/checkout-add/`
+      let apiLink = `/checkout-add/`
       const response = await fetch(apiLink , {
           method: 'POST',
           headers: {
