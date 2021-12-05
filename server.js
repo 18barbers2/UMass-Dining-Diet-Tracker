@@ -27,6 +27,10 @@ const session = {
 };
 
 const strategy = new Strategy(
+    {
+        usernameField: 'email',
+        passwordField: 'password'
+    },
     async (email, password, done) => {
         console.log("STRATEGY STARTING");
 	if (!(await findUser(email))) {
@@ -43,6 +47,7 @@ const strategy = new Strategy(
 	}
 	// success!
 	// should create a user object here, associated with a unique identifier
+    console.log("got to done");
 	return done(null, email);
 });
 
@@ -54,9 +59,10 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 
+
 // Convert user object to a unique identifier.
-passport.serializeUser((user, done) => {
-    done(null, user);
+passport.serializeUser((email, done) => {
+    done(null, email);
 });
 // Convert a unique identifier to a user object.
 passport.deserializeUser((uid, done) => {
@@ -64,6 +70,7 @@ passport.deserializeUser((uid, done) => {
 });
 
 function checkLoggedIn(req, res, next) {
+    console.log("did we actually enter checkLoggedIn?");
     if (req.isAuthenticated()) {
         // If we are authenticated, run the next route.
         next();
@@ -74,7 +81,7 @@ function checkLoggedIn(req, res, next) {
 }
 //LEAVE ROOM FOR DATABASE STUFF
 
-const pass = process.env.PASSWORD;
+const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
@@ -106,7 +113,6 @@ async function findUser(email) {
 }
 
 async function validatePassword(email, pwd) {
-    
     if (!(await findUser(email))) {
 	    return false;
     }
@@ -160,35 +166,47 @@ app.get('/sign-in',(req, res) => {
     res.sendFile(__dirname + '/public/sign-in.html');
 });
 
+app.post('/sign-in', passport.authenticate('local', {     // use username/password authentication
+    'successRedirect' : '/home',   // when we login, go to /home
+    'failureRedirect' : '/', // otherwise, back to login
+}));
 
-// app.post('/sign-in', 
-//     passport.authenticate('local', {     // use username/password authentication
-//         'successRedirect' : '/home',   // when we login, go to /home
-//         'failureRedirect' : '/sign-in', // otherwise, back to login
-// }), function (req, res) {
-    //     console.log("SUCECSS OR NOT SUCCESS");
-    // });
+// app.post('/sign-in', async (req, res) =>  {
+//         console.log("posting to sign-in");
+//         const email = req.body.email;
+//         const password = req.body.password;
+//         console.log(req.body);
+//         // use mongoose to see if user exists with password
+
+//         console.log("finding from database");
+//         if(await validatePassword(email, password)){
+//             console.log("LOGIN SUCCESSFUL: ");
+//             res.send({email: email});
+//             // res.redirect('/profile');
+//         } else {
+//             res.sendStatus(500);
+//             //res.redirect('/sign-in');
+//         }
     
-app.post('/sign-in', async (req, res) =>  {
-        console.log("posting to sign-in");
-        const email = req.body.email;
-        const password = req.body.password;
-        console.log(req.body);
-        // use mongoose to see if user exists with password
+//     });
 
-        console.log("finding from database");
-        if(await validatePassword(email, password)){
-            console.log("LOGIN SUCCESSFUL: ");
-            res.send({email: email});
-            // res.redirect('/profile');
-        } else {
-            res.sendStatus(500);
-            //res.redirect('/sign-in');
-        }
-    });
+app.get('/home', checkLoggedIn, (req, res) => {
+    res.redirect('/home/' + req.user);
+});
+
+app.get('/home/:userID/', checkLoggedIn, (req, res) => {
+    console.log("req.params.userID === req.user reached");
+    if (req.params.userID === req.user) {
+        console.log("serving home file");
+        res.sendFile(__dirname + "/public/home.html");
+    } else {
+        res.redirect('/home');
+    }
+});
+
 
 // CREATE ACCOUNT
-app.get('/create-account',(req, res) => {
+app.get('/create-account', (req, res) => {
     console.log("serving create-account");
     res.sendFile(__dirname + '/public/create-account.html');
 });
@@ -209,10 +227,6 @@ app.post('/create-account', async (req, res) => {
     else {
         res.redirect('/create-account');
     }
-});
-
-app.get('/home', (req, res) => {
-    res.sendFile(__dirname + "/public/home.html");
 });
 
 
@@ -274,13 +288,6 @@ app.post('/checkout-add', async (req, res) => {
         macroHistory: macroArray
     }});
 });
-
-
-
-app.get('/home', (req, res) => {
-    res.sendFile(__dirname + "/public/home.html");
-});
-
 
 // update Profile Daily Values
 app.get("/profile", (req, res) => {

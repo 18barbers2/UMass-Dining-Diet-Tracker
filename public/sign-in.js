@@ -31,24 +31,24 @@ async function loginUser() {
     
     const endpoint = `/sign-in`;
 
-    const response = await fetch(endpoint, {
+    await fetch(endpoint, {
         method: 'POST',
         body: credentials,
         headers: {'Content-Type': 'application/json'}
     });
 
-    alert(response.ok);
-    if(response.ok) {
-        window.location.href = "/home";
-        const userJSON = await response.json();
-        const userEmail = userJSON["email"];
+    // alert(response.ok);
+    // if(response.ok) {
+    //     window.location.href = "/home";
+    //     const userJSON = await response.json();
+    //     const userEmail = userJSON["email"];
 
-        const storage = window.localStorage;
-        storage.setItem("userEmail", userEmail);
-    }
-    else {
-        window.location.href = "/sign-in";
-    }
+    //     const storage = window.localStorage;
+    //     storage.setItem("userEmail", userEmail);
+    // }
+    // else {
+    //     window.location.href = "/sign-in";
+    // }
     //console.log(response);
 }
 
