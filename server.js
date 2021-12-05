@@ -47,7 +47,6 @@ const strategy = new Strategy(
 	}
 	// success!
 	// should create a user object here, associated with a unique identifier
-    console.log("got to done");
 	return done(null, email);
 });
 
@@ -70,7 +69,6 @@ passport.deserializeUser((uid, done) => {
 });
 
 function checkLoggedIn(req, res, next) {
-    console.log("did we actually enter checkLoggedIn?");
     if (req.isAuthenticated()) {
         // If we are authenticated, run the next route.
         next();
@@ -171,31 +169,11 @@ app.post('/sign-in', passport.authenticate('local', {     // use username/passwo
     'failureRedirect' : '/', // otherwise, back to login
 }));
 
-// app.post('/sign-in', async (req, res) =>  {
-//         console.log("posting to sign-in");
-//         const email = req.body.email;
-//         const password = req.body.password;
-//         console.log(req.body);
-//         // use mongoose to see if user exists with password
-
-//         console.log("finding from database");
-//         if(await validatePassword(email, password)){
-//             console.log("LOGIN SUCCESSFUL: ");
-//             res.send({email: email});
-//             // res.redirect('/profile');
-//         } else {
-//             res.sendStatus(500);
-//             //res.redirect('/sign-in');
-//         }
-    
-//     });
-
 app.get('/home', checkLoggedIn, (req, res) => {
     res.redirect('/home/' + req.user);
 });
 
 app.get('/home/:userID/', checkLoggedIn, (req, res) => {
-    console.log("req.params.userID === req.user reached");
     if (req.params.userID === req.user) {
         console.log("serving home file");
         res.sendFile(__dirname + "/public/home.html");
@@ -203,7 +181,6 @@ app.get('/home/:userID/', checkLoggedIn, (req, res) => {
         res.redirect('/home');
     }
 });
-
 
 // CREATE ACCOUNT
 app.get('/create-account', (req, res) => {
@@ -220,7 +197,7 @@ app.post('/create-account', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    if(await addUser(fname, lname, email, username, password)) {
+    if (await addUser(fname, lname, email, username, password)) {
         console.log("ADDED NEW USER:");
         res.redirect('/sign-in');
     }
@@ -229,10 +206,17 @@ app.post('/create-account', async (req, res) => {
     }
 });
 
+app.get('/checkout-food',checkLoggedIn, (req, res) => {
+    res.redirect('/checkout-food/' + req.user);
+});
 
 //retrun json object with food values. will be passed food names
-app.get('/checkout-food', (req, res) => {
-    res.sendFile(__dirname + '/public/add-food.html');
+app.get('/checkout-food/:userID/', checkLoggedIn, (req, res) => {
+    if (req.params.userID === req.user) {
+        res.sendFile(__dirname + '/public/add-food.html');
+    } else {
+        res.redirect('/checkout-food');
+    }
 });
 
 // Recieves simple object of form {dinginHall: "name"}. Should be used to grab correct food from DB based on name
@@ -290,9 +274,17 @@ app.post('/checkout-add', async (req, res) => {
 });
 
 // update Profile Daily Values
-app.get("/profile", (req, res) => {
-    console.log("serving profile");
-    res.sendFile(__dirname + '/public/profile.html');
+app.get("/profile", checkLoggedIn, (req, res) => {
+    res.redirect('/profile/' + req.user);
+});
+
+// update Profile Daily Values
+app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
+    if (req.params.userID === req.user) {
+        res.sendFile(__dirname + '/public/profile.html');
+    } else {
+        res.redirect('/profile');
+    }
 });
 
 app.post("/profile",(req, res) => {

@@ -31,11 +31,12 @@ async function loginUser() {
     
     const endpoint = `/sign-in`;
 
-    await fetch(endpoint, {
+    const file = await fetch(endpoint, {
         method: 'POST',
         body: credentials,
         headers: {'Content-Type': 'application/json'}
     });
+    window.location = file.url;
 
     // alert(response.ok);
     // if(response.ok) {
