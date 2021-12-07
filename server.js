@@ -55,6 +55,7 @@ app.use(express.json());
 app.use("/", express.static("public"));
 app.use(expressSession(session));
 passport.use(strategy);
+passport.use(User.createStrategy());
 app.use(passport.initialize());
 app.use(passport.session());
 
@@ -171,25 +172,6 @@ app.post('/sign-in', passport.authenticate('local', {     // use username/passwo
     'failureRedirect' : '/', // otherwise, back to login
 }));
 
-// app.post('/sign-in', async (req, res) =>  {
-//         console.log("posting to sign-in");
-//         const email = req.body.email;
-//         const password = req.body.password;
-//         console.log(req.body);
-//         // use mongoose to see if user exists with password
-
-//         console.log("finding from database");
-//         if(await validatePassword(email, password)){
-//             console.log("LOGIN SUCCESSFUL: ");
-//             res.send({email: email});
-//             // res.redirect('/profile');
-//         } else {
-//             res.sendStatus(500);
-//             //res.redirect('/sign-in');
-//         }
-    
-//     });
-
 app.get('/home', checkLoggedIn, (req, res) => {
     res.redirect('/home/' + req.user);
 });
@@ -220,13 +202,20 @@ app.post('/create-account', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    if(await addUser(fname, lname, email, username, password)) {
-        console.log("ADDED NEW USER:");
-        res.redirect('/sign-in');
-    }
-    else {
-        res.redirect('/create-account');
-    }
+    // if(await addUser(fname, lname, email, username, password)) {
+    //     console.log("ADDED NEW USER:");
+    //     res.redirect('/sign-in');
+    // }
+    // else {
+    //     res.redirect('/create-account');
+    // }
+    User.register(new User({username: username}), password, function(err) {
+        if(err) {
+            console.log("error while creating account!", err);
+        }
+        console.log("user registered!");
+        res.redirect('/');
+    })
 });
 
 
