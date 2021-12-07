@@ -11,9 +11,9 @@ window.addEventListener("load", async () => {await loadData(); loadName(); loadG
 
 
 async function loadData() {
-
-    console.log(window.localStorage.getItem("userEmail"));
-    let userEmailJson = {"email": window.localStorage.getItem("userEmail")};
+    //get the users email from the url
+    const userEmail = window.location.href.split('/').pop();
+    let userEmailJson = {"email": userEmail};
     const response = await fetch(`/user/schema`, {
         method: "POST", 
         body: JSON.stringify(userEmailJson),

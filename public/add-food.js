@@ -185,7 +185,8 @@ async function foodCheckout() {
         }
       }
     }
-    const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
+    const userEmail = window.location.href.split('/').pop();
+    const checkoutObj = {"email": userEmail, "totalNutrients":totalNutrients};
     if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
       let apiLink = `/checkout-add/`
       const response = await fetch(apiLink , {
