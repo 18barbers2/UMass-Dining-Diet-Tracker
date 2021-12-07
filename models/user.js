@@ -1,4 +1,6 @@
 import mongoose from 'mongoose';
+import passportLocalMongoose from 'passport-local-mongoose';
+
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
@@ -35,6 +37,8 @@ const foodSchema = new Schema({
     Franklin: Schema.Types.Mixed,
     Hampshire: Schema.Types.Mixed
 });
+
+User.plugin(passportLocalMongoose);
 
 const User = mongoose.model('User', userSchema);
 const Food = mongoose.model('Food', foodSchema);
