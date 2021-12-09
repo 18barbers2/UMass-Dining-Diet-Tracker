@@ -13,10 +13,6 @@ async function sendAccountData() {
         }
     });
 
-    console.log(response.status);
-    if(!response.ok) {
-       alert("could not create account");
-    } 
 }
 
 function getAccountInfo() {
