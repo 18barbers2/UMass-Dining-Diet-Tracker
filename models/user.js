@@ -8,7 +8,6 @@ const userSchema = new Schema({
     firstName: String,
     lastName: String,
     email: String,
-    password: [String, String],
     macroHistory: [{
         date: String,
         caloriesTotal: Number,
@@ -21,13 +20,34 @@ const userSchema = new Schema({
         weightTotal: Number
     }],
     nutritionGoals : {
-        calories: Number,
-        protein: Number,
-        carbohydrates: Number,
-        cholesterol: Number,
-        fat: Number,
-        sodium: Number,
-        sugar: Number
+        calories: {
+            type: Number, 
+            default: 200
+        },
+        protein: {
+            type: Number,
+            default: 50
+        },
+        carbohydrates: {
+            type: Number,
+            default: 300
+        },
+        cholesterol: {
+            type: Number,
+            default: 250
+        },
+        fat: {
+            type: Number,
+            default: 50
+        },
+        sodium: {
+            type: Number,
+            default: 3400
+        },
+        sugar: {
+            type: Number,
+            default: 125
+        }
     }
 }, );
 
@@ -38,9 +58,11 @@ const foodSchema = new Schema({
     Hampshire: Schema.Types.Mixed
 });
 
-User.plugin(passportLocalMongoose);
+
+userSchema.plugin(passportLocalMongoose, {usernameField: 'email'});
 
 const User = mongoose.model('User', userSchema);
 const Food = mongoose.model('Food', foodSchema);
+
 
 export {User, Food};
