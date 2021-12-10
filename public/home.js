@@ -2,8 +2,6 @@
 
 // import {User} from './models/user.js';
 
-// const User = require('./models/user.js');
-
 let userData = {};
 
 // window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
