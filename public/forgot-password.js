@@ -1,25 +1,32 @@
 'use strict';
 
-const forgotpasswordButton = document.getElementById("resetPassButton");
-forgotpasswordButton.addEventListener("click", resetPassword);
+const forgotPasswordButton = document.getElementById("reset-password");
+forgotPasswordButton.addEventListener("click", async () => sendResetEmail());
 
 
-function sendResetPassword() {
+async function sendResetEmail() {
+  let endpoint = `/forgot-password`;
+  let email = document.getElementById("reset-email").value;
 
+  let securityCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 
-}
-async function resetPassword() {
-    let apiLink = `/delete/password`;
+  const data = JSON.stringify({email: email, secret: securityCode});
+  console.log("SENDING ACCOUNT DATA");
 
-    const emailJSON = JSON.stringify({"email": document.getElementById("reset-email").value});
+  const response = await fetch(endpoint , {
+      method: 'POST',
+      body: data, 
+      headers: {
+        'Content-Type': 'application/json'
+      }
+  });
+  if(data === undefined) {
+    alert("COULD NOT SENT RESET EMAIL TO :" + data);
+  }
+  if(response.ok) {
+    alert("RESET EMAIL SENT");
+    window.location = response.url;
+  }
+  console.log(response.status);
 
-    const response = await fetch(apiLink , {
-        method: 'POST',
-        body: emailJSON,
-        headers: {
-          'Content-Type': 'application/json;charset=utf-8'
-        },
-    });
-
-    console.log(response.ok);
 }
