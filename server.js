@@ -15,10 +15,13 @@ const __dirname = path.dirname(__filename);
 import { User, Food } from './models/user.js';
 import puppeteer from 'puppeteer';
 import cron from 'node-cron';
+import nodemailer from 'nodemailer';
+
 const port = process.env.PORT || 8080;
 const app = express();
-const Strategy = LocalStrategy.Strategy;
-const mc = new minicrypt();
+// const Strategy = LocalStrategy.Strategy;
+// const mc = new minicrypt();
+
 
 const session = {
     secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
@@ -309,11 +312,10 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
     }
 });
 
+//TODO FIX THIS TO BE DYNAMIC FOR EACH USER
 app.post("/profile",(req, res) => {
     console.log("POST REQUEST RECEIVED");
-
     let data = req.body;
-    console.log(data);
 
     User.updateOne({email: "sambarber101@gmail.com"}, {$set: data}, (error, result) => {
         if(error){
@@ -321,7 +323,6 @@ app.post("/profile",(req, res) => {
         }
         else {
             console.log("DATA SENT TO DATABASE");
-            console.log(result);
         }
     });
 });
@@ -331,6 +332,64 @@ app.get('/forgot-password',(req,res) => {
     res.sendFile(__dirname + '/public/forgot-password.html');
 });
 
+app.post("/forgot-password", async (req, res) => {
+    console.log("POSTING TO FORGOT PASSWORD");
+    
+    const sendEmailTo = req.body["email"];
+    const securityCode = req.body["secret"];
+    
+    if(sendEmailTo === undefined){
+        res.send({success: false, message: "EMAIL REQUIRED"});
+    }
+    
+    if(!(findUser)) {
+        res.send({success: false, message: "No user with that email exists"});
+        return;
+    }
+    
+    
+    // TODO: MIGHT WANT TO MAKE THIS ONLY EXECUTE ONCE IN THE BEGGINING FOR CREATING TRANSPORTER
+    // create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+        port: 465,               // true for 465, false for other ports
+        host: "smtp.gmail.com",
+        auth: {
+            user: 'umassmacrotracker@gmail.com',
+            // DO NOT PUSH THIS PASSWORD
+            pass: 'Rrak$yTivPL!v@GZ3%',
+        },
+        secure: true,
+    });
+
+    const mailData = {
+        from: 'umassmacrotracker@gmail.com',  // sender address
+        to: sendEmailTo,   // list of receivers
+        subject: 'Password Reset Requested for UMass Dining Macro Tracker',
+        text: 'That was easy!',
+        html: `<p>Hey there!</p><p>Security code: <b>${securityCode}</b> </p>`
+        };
+
+    transporter.sendMail(mailData, (error, info) => {
+        if(error){
+            return console.log("THERE WAS AN ERROR SENDING EMAIL");
+        }
+        res.status(200).send({message: "Mail sent", message_id: info.messageId});
+    });
+
+    res.redirect('/reset-password');
+});
+
+app.get("/reset-password", (req, res) => {
+    console.log("serving reset-password");
+    res.sendFile(__dirname + '/public/reset-password.html');
+});
+
+app.post("/reset-password", (req, res) => {
+    console.log("POSTING TO RESET-PASSWORD");
+
+    const newPassword = req.body["newPassword"];
+
+});
 
 app.post('/delete/password', (req, res) => {
     const email = JSON.parse(req.body);
