@@ -18,7 +18,7 @@ async function sendReset() {
     }
 
     let endpoint = `/reset-password`;
-    const data = JSON.stringify({newPassword: newPass});
+    const data = JSON.stringify({newPassword: newPass, email: window.localStorage.getItem("userEmail")});
     // console.log("SENDING ACCOUNT DATA");
     const response = await fetch(endpoint , {
         method: 'POST',
