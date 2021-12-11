@@ -32,6 +32,7 @@ async function sendReset() {
 
     if(response.ok) {
         alert("PASSWORD RESET");
+        window.location = response.url;
     } else {
         alert("ERROR RESETTING PASSWORD");
     }
