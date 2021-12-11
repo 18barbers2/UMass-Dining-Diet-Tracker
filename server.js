@@ -13,11 +13,13 @@ import mongoose from 'mongoose';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { User, Food } from './models/user.js';
+import nodemailer from 'nodemailer';
 
 const port = process.env.PORT || 8080;
 const app = express();
-const Strategy = LocalStrategy.Strategy;
-const mc = new minicrypt();
+// const Strategy = LocalStrategy.Strategy;
+// const mc = new minicrypt();
+
 
 const session = {
     secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
@@ -25,49 +27,57 @@ const session = {
     saveUninitialized: false
 };
 
-const strategy = new Strategy(
-    {
-        usernameField: 'email',
-        passwordField: 'password'
-    },
-    async (email, password, done) => {
-        console.log("STRATEGY STARTING");
-	if (!(await findUser(email))) {
-	    // no such user
-	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
-	    return done(null, false, { 'message' : 'Wrong username' });
-	}
-	if (!(await validatePassword(email, password))) {
-	    // invalid password
-	    // should disable logins after N messages
-	    // delay return to rate-limit brute-force attacks
-	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
-	    return done(null, false, { 'message' : 'Wrong password' });
-	}
-	// success!
-	// should create a user object here, associated with a unique identifier
-	return done(null, email);
-});
+const mailPass = process.env.MAILPASS || 'placeholder';
+
+// const strategy = new Strategy(
+//     {
+//         usernameField: 'email',
+//         passwordField: 'password'
+//     },
+//     async (email, password, done) => {
+//         console.log("STRATEGY STARTING");
+// 	if (!(await findUser(email))) {
+// 	    // no such user
+// 	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
+// 	    return done(null, false, { 'message' : 'Wrong username' });
+// 	}
+// 	if (!(await validatePassword(email, password))) {
+// 	    // invalid password
+// 	    // should disable logins after N messages
+// 	    // delay return to rate-limit brute-force attacks
+// 	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
+// 	    return done(null, false, { 'message' : 'Wrong password' });
+// 	}
+// 	// success!
+// 	// should create a user object here, associated with a unique identifier
+// 	return done(null, email);
+// });
 
 app.use(express.json());
 app.use("/", express.static("public"));
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(expressSession(session));
-passport.use(strategy);
+// passport.use(strategy);
+
+// testing how to use mongoose authentication
+// passport.use(new Strategy(User.authenticate()));
+passport.use(User.createStrategy());
+
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('html'));
 
+// // Convert user object to a unique identifier.
+// passport.serializeUser((email, done) => {
+//     done(null, email);
+// });
+// // Convert a unique identifier to a user object.
+// passport.deserializeUser((uid, done) => {
+//     done(null, uid);
+// });
 
-
-// Convert user object to a unique identifier.
-passport.serializeUser((email, done) => {
-    done(null, email);
-});
-// Convert a unique identifier to a user object.
-passport.deserializeUser((uid, done) => {
-    done(null, uid);
-});
+passport.serializeUser(User.serializeUser())
+passport.deserializeUser(User.deserializeUser());
 
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
@@ -78,7 +88,6 @@ function checkLoggedIn(req, res, next) {
         res.redirect('/sign-in');
     }
 }
-//LEAVE ROOM FOR DATABASE STUFF
 
 const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
 const dbname = 'umass_diet_tracker_database';
@@ -110,52 +119,52 @@ async function findUser(email) {
     return true;
 }
 
-async function validatePassword(email, pwd) {
-    if (!(await findUser(email))) {
-	    return false;
-    }
+// async function validatePassword(email, pwd) {
+//     if (!(await findUser(email))) {
+// 	    return false;
+//     }
 
-    const q = User.find({email:email});
-    const queryResult = await q.exec();
-    const [salt, hash] = queryResult[0].password;
+//     const q = User.find({email:email});
+//     const queryResult = await q.exec();
+//     const [salt, hash] = queryResult[0].password;
 
-    const res = mc.check(pwd, salt, hash);
+//     const res = mc.check(pwd, salt, hash);
 
-    return res;
-}
+//     return res;
+// }
 
-async function addUser(fname, lname, email, username, pwd) {
-    if (await findUser(email)) {
-	    return false;
-    }
+// async function addUser(fname, lname, email, username, pwd) {
+//     if (await findUser(email)) {
+// 	    return false;
+//     }
 
-    const [salt, hash] = mc.hash(pwd);
+//     const [salt, hash] = mc.hash(pwd);
 
-    const newUserData = {
-        username: username,
-        firstName: fname,
-        lastName: lname,
-        email: email,
-        password: [salt, hash],
-        macroHistory: [],
-        nutritionGoals : {
-            calories: 2000,
-            protein: 50,
-            carbohydrates: 300,
-            cholesterol: 250,
-            fat: 50,
-            sodium: 3400,
-            sugar: 125
-        }
-    }
+//     const newUserData = {
+//         username: username,
+//         firstName: fname,
+//         lastName: lname,
+//         email: email,
+//         password: [salt, hash],
+//         macroHistory: [],
+//         nutritionGoals : {
+//             calories: 2000,
+//             protein: 50,
+//             carbohydrates: 300,
+//             cholesterol: 250,
+//             fat: 50,
+//             sodium: 3400,
+//             sugar: 125
+//         }
+//     }
 
-    const newUser = new User(newUserData);
-    newUser.save();
-    return true;
-}
+//     const newUser = new User(newUserData);
+//     newUser.save();
+//     return true;
+// }
 
-app.get('/', (req, res) => {
-    console.log("REIDRECTING")
+app.get('/', /*checkLoggedIn, */ (req, res) => {
+    console.log("REDIRECTING TO SIGN-IN")
     res.redirect("/sign-in");
 });
 
@@ -166,19 +175,34 @@ app.get('/sign-in',(req, res) => {
 
 app.post('/sign-in', passport.authenticate('local', {     // use username/password authentication
     'successRedirect' : '/home',   // when we login, go to /home
-    'failureRedirect' : '/', // otherwise, back to login
-}));
+    'failureRedirect' : '/sign-in', // otherwise, back to login
+}), (err, user) => {
+    if(err) {
+        res.json({success: false, message: err});
+    }
+    if(!user) {
+        res.json({success:false, message: 'username or password incorrect'});
+    }
+});
+
+
+app.get("/logout", (req, res) => {
+    console.log("LOGGING OUT");
+    req.logout();
+    res.redirect("/")
+});
 
 app.get('/home', checkLoggedIn, (req, res) => {
-    res.redirect('/home/' + req.user);
+    res.redirect('/home/' + req.user["email"]);
 });
 
 app.get('/home/:userID/', checkLoggedIn, (req, res) => {
-    if (req.params.userID === req.user) {
+
+    if (req.params.userID === req.user["email"]) {
         console.log("serving home file");
         res.sendFile(__dirname + "/public/home.html");
     } else {
-        res.redirect('/home');
+        res.redirect('/sign-in');
     }
 });
 
@@ -188,7 +212,7 @@ app.get('/create-account', (req, res) => {
     res.sendFile(__dirname + '/public/create-account.html');
 });
 
-app.post('/create-account', async (req, res) => {
+app.post('/create-account', (req, res) => {
     console.log("POST TO CREATE ACCOUNT");
     
     const lname = req.body.lname;
@@ -197,22 +221,25 @@ app.post('/create-account', async (req, res) => {
     const username = req.body.username;
     const password = req.body.password;
 
-    if (await addUser(fname, lname, email, username, password)) {
-        console.log("ADDED NEW USER:");
-        res.redirect('/sign-in');
-    }
-    else {
-        res.redirect('/create-account');
-    }
+    User.register(new User({username: username, email: email, lastName:lname, firstName: fname}), password, function(err, user) {
+        if(err) {
+            console.log("error while creating account!", err);
+            res.status(500).send(err);
+        }else {
+            console.log("user registered!");
+            res.redirect('/');
+        }
+    });
+
 });
 
-app.get('/checkout-food',checkLoggedIn, (req, res) => {
-    res.redirect('/checkout-food/' + req.user);
+app.get('/checkout-food', checkLoggedIn, (req, res) => {
+    res.redirect('/checkout-food/' + req.user["email"]);
 });
 
 //retrun json object with food values. will be passed food names
 app.get('/checkout-food/:userID/', checkLoggedIn, (req, res) => {
-    if (req.params.userID === req.user) {
+    if (req.params.userID === req.user["email"]) {
         res.sendFile(__dirname + '/public/add-food.html');
     } else {
         res.redirect('/checkout-food');
@@ -275,31 +302,31 @@ app.post('/checkout-add', async (req, res) => {
 
 // update Profile Daily Values
 app.get("/profile", checkLoggedIn, (req, res) => {
-    res.redirect('/profile/' + req.user);
+    res.redirect('/profile/' + req.user["email"]);
 });
 
 // update Profile Daily Values
 app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
-    if (req.params.userID === req.user) {
+    if (req.params.userID === req.user["email"]) {
         res.sendFile(__dirname + '/public/profile.html');
     } else {
         res.redirect('/profile');
     }
 });
 
-app.post("/profile",(req, res) => {
+//TODO FIX THIS TO BE DYNAMIC FOR EACH USER
+app.post("/profile/update", checkLoggedIn,(req, res) => {
     console.log("POST REQUEST RECEIVED");
-
     let data = req.body;
-    console.log(data);
 
-    User.updateOne({email: "sambarber101@gmail.com"}, {$set: data}, (error, result) => {
+    User.updateOne({email: req.user["email"]}, {$set: data}, (error, result) => {
         if(error){
             console.log("ERROR SENDING TO DATABASE");
+            res.status(500);
         }
         else {
-            console.log("DATA SENT TO DATABASE");
-            console.log(result);
+            console.log(`${req.user["email"]}'s GOALS UPDATED`);
+            res.status(200).redirect('/home');
         }
     });
 });
@@ -309,6 +336,69 @@ app.get('/forgot-password',(req,res) => {
     res.sendFile(__dirname + '/public/forgot-password.html');
 });
 
+app.post("/forgot-password", async (req, res) => {
+    console.log("POSTING TO FORGOT PASSWORD");
+    
+    const sendEmailTo = req.body["email"];
+    const securityCode = req.body["secret"];
+
+    // update users passwordToken field
+
+    let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
+    
+    if(sendEmailTo === undefined){
+        res.send({success: false, message: "EMAIL REQUIRED"});
+    }
+    if(!(findUser)) {
+        res.send({success: false, message: "No user with that email exists"});
+        return;
+    }
+    
+    // const userResult = (await User.find({email: email}).exec())[0];
+
+
+    
+    // TODO: MIGHT WANT TO MAKE THIS ONLY EXECUTE ONCE IN THE BEGGINING FOR CREATING TRANSPORTER
+    // create reusable transporter object using the default SMTP transport
+    const transporter = nodemailer.createTransport({
+        port: 465,               // true for 465, false for other ports
+        host: "smtp.gmail.com",
+        auth: {
+            user: 'umassmacrotracker@gmail.com',
+            pass: mailPass,
+        },
+        secure: true,
+    });
+
+    const mailData = {
+        from: 'umassmacrotracker@gmail.com',  // sender address
+        to: sendEmailTo,   // list of receivers
+        subject: 'Password Reset Requested for UMass Dining Macro Tracker',
+        text: 'That was easy!',
+        html: `<p>Hey there!</p><p>Security code: <b>${securityCode}</b> </p>`
+        };
+
+    transporter.sendMail(mailData, (error, info) => {
+        if(error){
+            return console.log("THERE WAS AN ERROR SENDING EMAIL");
+        }
+        res.status(200).send({message: "Mail sent", message_id: info.messageId});
+    });
+
+    res.redirect('/reset-password');
+});
+
+app.get("/reset-password", (req, res) => {
+    console.log("serving reset-password");
+    res.sendFile(__dirname + '/public/reset-password.html');
+});
+
+app.post("/reset-password", (req, res) => {
+    console.log("POSTING TO RESET-PASSWORD");
+
+    const newPassword = req.body["newPassword"];
+
+});
 
 app.post('/delete/password', (req, res) => {
     const email = JSON.parse(req.body);
@@ -326,6 +416,5 @@ app.post('/user/schema', async (req, res) => {
     const response = await q.exec();
     const data = response[0];
     res.send(data);
-    
 });
  

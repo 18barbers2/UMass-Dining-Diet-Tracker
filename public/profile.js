@@ -4,8 +4,8 @@ async function updateDailyGoals() {
     
     const dailyGoals = JSON.stringify(getDailyGoalValues());
 
-    let endpoint = `/profile`;
-    await fetch(endpoint, {
+    let endpoint = `/profile/update`;
+    const response = await fetch(endpoint, {
         method: 'POST',
         body: dailyGoals,
         headers: {
@@ -13,10 +13,17 @@ async function updateDailyGoals() {
         }
     });
 
+    if(response.ok) {
+        alert("Goals Updated!");
+        window.location = response.url;
+    }
+    else {
+        alert("ERROR SAVING DAILY GOALS");
+    }
+
 }
 
 function getDailyGoalValues() {
-    console.log("BUNDLING UP DATA");
 
     // note: could be changed to loop if html is changed
     const calories = document.getElementById("calorie-goal").value;

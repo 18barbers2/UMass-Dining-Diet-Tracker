@@ -2,8 +2,6 @@
 
 // import {User} from './models/user.js';
 
-// const User = require('./models/user.js');
-
 let userData = {};
 
 // window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
@@ -19,13 +17,11 @@ async function loadData() {
         body: JSON.stringify(userEmailJson),
         headers: {'Content-type': 'application/json'}
     }); 
-    console.log("WHERE AR WE");
     userData = await response.json();
-    console.log(userData);
 }
 
 function loadName() {
-    document.getElementById("welcomeMsg").innerText = `Welcome ${userData["firstName"]}!`;
+    document.getElementById("welcomeMsg").innerText = `Welcome ${userData["macroHistory"][0]["date"]}!`;
 }
 
 function loadGoals() {
@@ -130,6 +126,7 @@ function loadWeight() {
         'May',
         'June',
     ];
+
     const data = {
         labels: labels,
         datasets: [{
@@ -154,25 +151,39 @@ function loadWeight() {
 
 function loadCalories() {
     
-    // let canvas = document.getElementById("calorie-chart");
-    // Plotly.newPlot(canvas,[{
-    //     x: [1, 2, 3, 4, 5],
-    //     y: [180, 175, 156, 150, 160] }]);
-    const labels = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-    ];
+
+    // get users macroHistory data
+    const dietHistory = userData["macroHistory"];
+    // for each of the last values up to a week, get the dates and make them labels
+
+    let labels = [];
+    let dataPoints = [];
+
+    for(let i = 0; i < dietHistory.length % 8; i++) {
+        let date = dietHistory[i]["date"];
+        console.log(`THE DATE IS: ${date}`);
+        labels.push(date);
+        dataPoints.push(dietHistory[i]["caloriesTotal"]);
+    }
+
+    window.localStorage.setItem("DEBUG", labels);
+
+    // const labels = [
+    //     'January',
+    //     'February',
+    //     'March',
+    //     'April',
+    //     'May',
+    //     'June',
+    // ];
+
     const data = {
         labels: labels,
         datasets: [{
-          label: 'My First dataset',
+          label: 'Calories',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
-          data: [0, 10, 5, 2, 20, 30, 45],
+          data: dataPoints,
         }]
     };
     
