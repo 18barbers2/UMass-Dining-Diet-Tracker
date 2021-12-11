@@ -24,7 +24,14 @@ async function sendAccountData() {
         }
     }
 
+<<<<<<< Updated upstream
    
+=======
+    if(response.ok) {
+        window.location = response.url;
+    }
+
+>>>>>>> Stashed changes
 }
 
 function getAccountInfo() {
