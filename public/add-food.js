@@ -100,6 +100,8 @@ async function foodTableUpdate(event){
           foodTableAdd(lunchMenuItem); //otherwise, add the food normally
         }
       }
+      lastClickedMeal = "Lunch";
+
     } else if(buttonType === "dinnerBtn" && hallMenu.dinner_menu){
       for(let i = 0; i < hallMenu.dinner_menu.length; i++) {
         const dinnerMenuItem = hallMenu.dinner_menu[i].foodName;
@@ -109,6 +111,7 @@ async function foodTableUpdate(event){
           foodTableAdd(dinnerMenuItem); //otherwise, add the food normally
         }
       }
+      lastClickedMeal = "Dinner";
     } else if(buttonType === "grabBtn" && hallMenu.grabngo){
       for(let i = 0; i < hallMenu.grabngo.length; i++) {
         const grabMenuItem = hallMenu.grabngo[i].foodName;
@@ -118,12 +121,14 @@ async function foodTableUpdate(event){
           foodTableAdd(grabMenuItem); //otherwise, add the food normally
         }
       }
+      lastClickedMeal = "Grab N'Go";
     } else { //Meal time not available
       const cont = document.getElementById("foodContainer");
       const foodFormat = document.createElement("h2");
       foodFormat.classList.add("notAvailable");
       foodFormat.classList.add("display-4");
-      const foodText = document.createTextNode(`${event.currentTarget.textContent} is not currently available.`);
+      const foodText = document.createTextNode(`${event.currentTarget.textContent} is not currently available at ${lastClickedHall}.`);
+      lastClickedMeal = event.currentTarget.textContent;
       foodFormat.appendChild(foodText);
       cont.appendChild(foodFormat);
     }
@@ -134,15 +139,19 @@ async function foodTableUpdate(event){
       if(buttonType === "frank"){
         hallMenu = currentMenu.Franklin;
         lunchButton.click();
+        lastClickedHall = "Frank";
       } else if(buttonType === "worcester") {
           hallMenu = currentMenu.Worcester;
           lunchButton.click();
+          lastClickedHall = "Worcester";
       } else if(buttonType === "berkshire") {
           hallMenu = currentMenu.Berkshire;
           lunchButton.click();
+          lastClickedHall = "Berkshire";
       } else if(buttonType === "hampshire") {
           hallMenu = currentMenu.Hampshire;
           lunchButton.click();
+          lastClickedHall = "Hampshire";
       } 
   } else { //Hallmenu is empty due to error
       const cont = document.getElementById("foodContainer");
@@ -152,8 +161,9 @@ async function foodTableUpdate(event){
       const foodText = document.createTextNode(`An error occured trying to access today's menu.`);
       foodFormat.appendChild(foodText);
       cont.appendChild(foodFormat);
+      displayText.innerHTML = "No Menu Available."
   }
-  displayText.innerHTML = `Current menu: ${lastClickedMeal}`;
+  displayText.innerHTML = `Current Menu: ${lastClickedHall} ${lastClickedMeal}`;
 }
 /*
 1. For now, just add original items. Function should eventually take an argument to populate with correct data.
