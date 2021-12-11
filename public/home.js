@@ -21,7 +21,7 @@ async function loadData() {
 }
 
 function loadName() {
-    document.getElementById("welcomeMsg").innerText = `Welcome ${userData["macroHistory"][0]["date"]}!`;
+    document.getElementById("welcomeMsg").innerText = `Welcome ${userData["firstName"]}!`;
 }
 
 function loadGoals() {
@@ -118,14 +118,24 @@ function loadGoals() {
 
 function loadWeight() {
 
-    const labels = [
-        'January',
-        'February',
-        'March',
-        'April',
-        'May',
-        'June',
-    ];
+    // get users macroHistory data
+    const dietHistory = userData["macroHistory"];
+    // for each of the last values up to a week, get the dates and make them labels
+
+    let labels = [];
+    let dataPoints = [];
+    let length = dietHistory.length > 7 ? 7 : dietHistory.length;
+
+    for(let i = 0; i < length; i++) {
+        let date = dietHistory[i]["date"];
+        console.log(`THE DATE IS: ${date}`);
+        labels.push(date);
+        dataPoints.push(dietHistory[i]["weightToday"]);
+    }
+
+    // reverse both
+    labels.reverse();
+    dataPoints.reverse();
 
     const data = {
         labels: labels,
@@ -133,7 +143,7 @@ function loadWeight() {
           label: 'My First dataset',
           backgroundColor: 'rgb(255, 99, 132)',
           borderColor: 'rgb(255, 99, 132)',
-          data: [0, 10, 5, 2, 20, 30, 45],
+          data: dataPoints,
         }]
     };
     
@@ -158,15 +168,18 @@ function loadCalories() {
 
     let labels = [];
     let dataPoints = [];
+    let length = dietHistory.length > 7 ? 7 : dietHistory.length;
 
-    for(let i = 0; i < (dietHistory.length % 7); i++) {
-        let date = dietHistory[((dietHistory.length % 7) - 1) - i]["date"];
+    for(let i = 0; i < length; i++) {
+        let date = dietHistory[i]["date"];
         console.log(`THE DATE IS: ${date}`);
         labels.push(date);
         dataPoints.push(dietHistory[i]["caloriesTotal"]);
     }
 
-    // window.localStorage.setItem("DEBUG", labels);
+    // reverse both
+    labels.reverse();
+    dataPoints.reverse();
 
     const data = {
         labels: labels,
