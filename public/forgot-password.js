@@ -26,6 +26,7 @@ async function sendResetEmail() {
   if(response.ok) {
     alert("RESET EMAIL SENT");
     window.location = response.url;
+    window.localStorage.setItem("userEmail", email);
   }
   console.log(response.status);
 

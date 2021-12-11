@@ -4,7 +4,8 @@ import passportLocalMongoose from 'passport-local-mongoose';
 const Schema = mongoose.Schema;
 
 const today = new Date();
-const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+// const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
 const userSchema = new Schema({
     username: String,
@@ -22,13 +23,13 @@ const userSchema = new Schema({
             fatTotal: 0,
             sodiumTotal: 0,
             sugarTotal: 0,
-            weightTotal: 0
+            weightToday: 0
         }]
     },
     nutritionGoals : {
         calories: {
             type: Number, 
-            default: 200
+            default: 2000
         },
         protein: {
             type: Number,
@@ -48,11 +49,11 @@ const userSchema = new Schema({
         },
         sodium: {
             type: Number,
-            default: 3400
+            default: 2000
         },
         sugar: {
             type: Number,
-            default: 125
+            default: 24
         }
     },
     passwordResetToken: Number
