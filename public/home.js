@@ -159,23 +159,14 @@ function loadCalories() {
     let labels = [];
     let dataPoints = [];
 
-    for(let i = 0; i < dietHistory.length % 8; i++) {
-        let date = dietHistory[i]["date"];
+    for(let i = 0; i < (dietHistory.length % 7); i++) {
+        let date = dietHistory[((dietHistory.length % 7) - 1) - i]["date"];
         console.log(`THE DATE IS: ${date}`);
         labels.push(date);
         dataPoints.push(dietHistory[i]["caloriesTotal"]);
     }
 
-    window.localStorage.setItem("DEBUG", labels);
-
-    // const labels = [
-    //     'January',
-    //     'February',
-    //     'March',
-    //     'April',
-    //     'May',
-    //     'June',
-    // ];
+    // window.localStorage.setItem("DEBUG", labels);
 
     const data = {
         labels: labels,
@@ -188,7 +179,7 @@ function loadCalories() {
     };
     
     const config = {
-        type: 'line',
+        type: 'bar',
         data: data,
         options: {
             responsive: true,
