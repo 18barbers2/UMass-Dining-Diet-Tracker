@@ -9,9 +9,13 @@ const connectionParams={useNewUrlParser: true, useUnifiedTopology: true };
 
 try {
     mongoose.connect(url, connectionParams);
-    mongoose.connection.once('open',() => {
-        runCronJob();
+    mongoose.connection.once('open', async () => {
+        await runCronJob();
     });
+
+    await new Promise((r) => setTimeout(r, 20000)); // two second delay
+    mongoose.connection.close();
+
 }
 catch (error) {
     console.log("ISSUE WITH CONNECTING TO DATABASE");
