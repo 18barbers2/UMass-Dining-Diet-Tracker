@@ -13,7 +13,7 @@ async function retrieveDiningHallFood() {
     //open the browser
     const page = await browser.newPage();
     //final dining hall data for the current day
-    let diningHallFoodData = {};
+    let diningHallFoodData = {}; 
     //information of each dining hall and the respective url to visit
     let diningHalls = [
         {'name': "Berkshire", "url": 'https://umassdining.com/locations-menus/berkshire/menu'},
