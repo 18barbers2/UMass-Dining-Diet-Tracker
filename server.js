@@ -29,6 +29,8 @@ const session = {
     saveUninitialized: false
 };
 
+const mailPass = process.env.MAILPASS;
+
 // const strategy = new Strategy(
 //     {
 //         usernameField: 'email',
@@ -355,8 +357,7 @@ app.post("/forgot-password", async (req, res) => {
         host: "smtp.gmail.com",
         auth: {
             user: 'umassmacrotracker@gmail.com',
-            // DO NOT PUSH THIS PASSWORD
-            pass: 'Rrak$yTivPL!v@GZ3%',
+            pass: mailPass,
         },
         secure: true,
     });
