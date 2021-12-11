@@ -2,12 +2,44 @@ import puppeteer from 'puppeteer';
 import mongoose from 'mongoose';
 import { Food } from './models/user.js';
 
-const pass = process.env.PASSWORD;
+const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true };
 
+try {
+    mongoose.connect(url, connectionParams);
+    mongoose.connection.once('open',() => {
+        runCronJob();
+    });
+}
+catch (error) {
+    console.log("ISSUE WITH CONNECTING TO DATABASE");
+}
 
+//Retrieves the dining hall food at 3AM each day for each dining hall and stores the food data in the database
+async function runCronJob() {
+    //Runs the job at 03:00 AM at America/New_York timezone
+    const food = await retrieveDiningHallFood();
+    //check if retrieveDiningHallFood failed
+    if (JSON.stringify(food) === '{}') {
+        console.log("Failed to retrieve food from the dining halls");
+    }
+    const diningHallFoods = new Food({
+        Berkshire: food['Berkshire'],
+        Worcester: food['Worcester'],
+        Franklin: food['Franklin'],
+        Hampshire: food['Hampshire']
+    });
+    //clear the collection before adding to it
+    await Food.deleteMany();
+    //update the Foods collection
+    diningHallFoods.save(function (err) {
+        if (err) console.log(err);
+    });
+}
+
+//retrieves food and labels from each of the dining halls and returs a json object
 async function retrieveDiningHallFood() {
     const browser = await puppeteer.launch({headless: true});
     //open the browser
@@ -17,9 +49,9 @@ async function retrieveDiningHallFood() {
     //information of each dining hall and the respective url to visit
     let diningHalls = [
         {'name': "Berkshire", "url": 'https://umassdining.com/locations-menus/berkshire/menu'},
-        {'name': "Worcester", "url": 'https://umassdining.com/locations-menus/worcester/menu'}
-        /*{'name': "Franklin", "url": 'https://umassdining.com/locations-menus/franklin/menu'},
-        {'name': "Hampshire", "url": 'https://umassdining.com/locations-menus/hampshire/menu'}*/
+        {'name': "Worcester", "url": 'https://umassdining.com/locations-menus/worcester/menu'},
+        {'name': "Franklin", "url": 'https://umassdining.com/locations-menus/franklin/menu'},
+        {'name': "Hampshire", "url": 'https://umassdining.com/locations-menus/hampshire/menu'}
     ];
 
     for (const diningHall of diningHalls) {
@@ -73,36 +105,4 @@ async function retrieveDiningHallFood() {
     }
     await browser.close();
     return diningHallFoodData;
-}
-
-//Retrieves the dining hall food at 3AM each day for each dining hall and stores the food data in the database
-async function runCronJob() {
-    //Runs the job at 03:00 AM at America/New_York timezone
-    const food = await retrieveDiningHallFood();
-    //check if retrieveDiningHallFood failed
-    if (JSON.stringify(food) === '{}') {
-        console.log("Failed to retrieve food from the dining halls");
-    }
-    const diningHallFoods = new Food({
-        Berkshire: food['Berkshire'],
-        Worcester: food['Worcester'],
-        Franklin: food['Franklin'],
-        Hampshire: food['Hampshire']
-    });
-    //clear the collection before adding to it
-    await Food.deleteMany();
-    //update the Foods collection
-    diningHallFoods.save(function (err) {
-        if (err) console.log(err);
-    });
-}
-
-try {
-    mongoose.connect(url, connectionParams);
-    mongoose.connection.once('open',() => {
-        runCronJob();
-    });
-}
-catch (error) {
-    console.log("ISSUE WITH CONNECTING TO DATABASE");
 }

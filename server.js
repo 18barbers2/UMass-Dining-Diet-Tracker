@@ -13,8 +13,7 @@ import mongoose from 'mongoose';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 import { User, Food } from './models/user.js';
-import puppeteer from 'puppeteer';
-import cron from 'node-cron';
+
 const port = process.env.PORT || 8080;
 const app = express();
 const Strategy = LocalStrategy.Strategy;
@@ -52,10 +51,12 @@ const strategy = new Strategy(
 
 app.use(express.json());
 app.use("/", express.static("public"));
+app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(expressSession(session));
 passport.use(strategy);
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(express.static('html'));
 
 
 
@@ -90,7 +91,6 @@ try {
         app.listen(port, () => {
             console.log(`Example app listening at http://localhost:${port}`);
         });
-        runCronJob();
     });
 }
 catch (error) {
@@ -154,7 +154,7 @@ async function addUser(fname, lname, email, username, pwd) {
     return true;
 }
 
-app.get('/', /*checkLoggedIn, */ (req, res) => {
+app.get('/', (req, res) => {
     console.log("REIDRECTING")
     res.redirect("/sign-in");
 });
@@ -328,82 +328,4 @@ app.post('/user/schema', async (req, res) => {
     res.send(data);
     
 });
-
-async function retrieveDiningHallFood() {
-    const browser = await puppeteer.launch({headless: true});
-    const page = await browser.newPage();
-    //final dining hall data for the day
-    let diningHallFoodData = {};
-    //information of each dining hall and the respective url to visit
-    let diningHalls = [
-        {'name': "Berkshire", "url": 'https://umassdining.com/locations-menus/berkshire/menu'},
-        {'name': "Worcester", "url": 'https://umassdining.com/locations-menus/worcester/menu'},
-        {'name': "Franklin", "url": 'https://umassdining.com/locations-menus/franklin/menu'},
-        {'name': "Hampshire", "url": 'https://umassdining.com/locations-menus/hampshire/menu'}
-    ];
-
-    for (const diningHall of diningHalls) {
-        await page.goto(diningHall["url"], {waitUntil: 'networkidle2'});
-        //store all of the meals for the dining hall
-        let diningHallMealNames = await page.$$eval("ul.etabs > li.tab", (mealTabs) => {
-            return mealTabs.map(tab => tab.getAttribute("aria-controls"));
-        });
-        //check if the dining hall is closed
-        if (diningHallMealNames.length <= 1) {
-            diningHallFoodData[diningHall['name']] = "Closed";
-            continue;
-        } else {
-            let diningHallFood = {};
-            for (let i = 0; i < diningHallMealNames.length; i++) {
-                //retrieve the food name and nutrional data for the specific dining hall
-                let foodItems = await page.$$eval(`#${diningHallMealNames[i]} a`, (items) => {
-                    return items.map(x => {
-                        let nutritionObj = {};
-                        nutritionObj["calories"] = parseInt(x.getAttribute("data-calories"));
-                        //remove the units from the string before converting to a number for each nutrient below
-                        nutritionObj["fat"] = parseInt(x.getAttribute("data-total-fat").replace("g", ""));
-                        nutritionObj["cholesterol"] = parseInt(x.getAttribute("data-cholesterol").replace("mg", ""));
-                        nutritionObj["sodium"] = parseInt(x.getAttribute("data-sodium").replace("mg", ""));
-                        nutritionObj["carbohydrates"] = parseInt(x.getAttribute("data-total-carb").replace("g", ""));
-                        nutritionObj["sugar"] = parseInt(x.getAttribute("data-sugars").replace("g", ""));
-                        nutritionObj["protein"] = parseInt(x.getAttribute("data-protein").replace("g", ""));
-                        return {"foodName": x.getAttribute("data-dish-name"), "nutritionFacts": nutritionObj};
-                    });
-                });
-                //store the meal and all the associated foods
-                diningHallFood[diningHallMealNames[i]] = foodItems;
-            }
-            //store all the meals for the day for each dining hall
-            diningHallFoodData[diningHall['name']] = diningHallFood;
-        } 
-    }
-    await browser.close();
-    return diningHallFoodData;
-}
-
-//Retrieves the dining hall food at 3AM each day for each dining hall and stores the food data in the database
-function runCronJob() {
-    cron.schedule('0 3 * * *', async () => {
-        //Runs the job at 03:00 AM at America/New_York timezone
-        const food = await retrieveDiningHallFood();
-        //check if retrieveDiningHallFood failed
-        if (JSON.stringify(food) === '{}') {
-            console.log("Failed to retrieve food from the dining halls");
-        }
-        const diningHallFoods = new Food({
-            Berkshire: food['Berkshire'],
-            Worcester: food['Worcester'],
-            Franklin: food['Franklin'],
-            Hampshire: food['Hampshire']
-        });
-        //clear the collection before adding to it
-        await Food.deleteMany();
-        //update the Foods collection
-        diningHallFoods.save(function (err) {
-            if (err) console.log(err);
-        });
-    }, {
-        scheduled: true,
-        timezone: "America/New_York"
-    });
-} 
+ 
