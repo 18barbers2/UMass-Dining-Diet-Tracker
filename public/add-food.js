@@ -50,7 +50,7 @@ window.onload = async function() {
 }
 
 /* 
-Adds a label to the food table, which I just display text
+Adds a label to the food table, which I just display text larger than food items
 */
 function foodTableAddLabel(name) {
   
@@ -58,8 +58,8 @@ function foodTableAddLabel(name) {
   let row = table.insertRow(-1);
   let foodEntry = row.insertCell(-1);
   
-  let foodFormat = document.createElement("h1");
-  foodFormat.classList.add("display-6");
+  let foodFormat = document.createElement("h2");
+  //foodFormat.classList.add("display-6");
   let foodText = document.createTextNode(name);
   foodFormat.appendChild(foodText); 
   foodEntry.appendChild(foodFormat);
@@ -166,7 +166,20 @@ function foodTableAdd(name){
   const table = document.getElementById("foodTable");
   let row = table.insertRow(-1);
   let foodEntry = row.insertCell(-1);
-  let formCheck = document.createElement('div');
+  let checkbox = document.createElement("input");
+  checkbox.type = "checkbox";
+  checkbox.onclick = function () {
+    toggleCheckbox(this);
+  }
+  let foodText = document.createTextNode(name);
+  //checkbox.appendChild(foodText);
+  let label = document.createElement("label");
+  label.style.margin = "5px";
+  label.style.fontSize = "1.25em";
+  label.appendChild(foodText);
+  foodEntry.appendChild(checkbox);
+  foodEntry.appendChild(label);
+  /*let formCheck = document.createElement('div');
   formCheck.className = "form-check";
   let checkboxInput = document.createElement('input');
   checkboxInput.type = "checkbox";
@@ -184,7 +197,7 @@ function foodTableAdd(name){
   checkboxInput.appendChild(foodLabel); // add label to checkbox
   formCheck.appendChild(checkboxInput); //add checkbox to form
   formCheck.appendChild(foodFormat); // THEN add formatted text
-  foodEntry.appendChild(formCheck);
+  foodEntry.appendChild(formCheck);*/
 }
 /* Removes Currently displayed food in table */
 function foodTableClear() {
