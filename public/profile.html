@@ -39,14 +39,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "calorie-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "calorie-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">g</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "calorie-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -57,14 +57,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "carbs-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "carbohydrates-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">g</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "carbohydrates-avg-button" class = "btn btn-success avg-button" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -75,11 +75,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "fat-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "fat-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <div class="input-group-append">
+                                    <span class="input-group-text">g</span>
+                                </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "fat-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -90,14 +93,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "sodium-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "sodium-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">mg</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "sodium-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -108,14 +111,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "cholesterol-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "cholesterol-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">mg</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "cholesterol-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -126,14 +129,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "sugar-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "sugar-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">g</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "sugar-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                     <div class="row border border-warning my-2">
@@ -144,14 +147,14 @@
                         </div>
                         <div class="col-4 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "protein-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "protein-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
                                     <span class="input-group-text">g</span>
                                 </div> 
                             </div>
                         </div>
                         <div class="col-1 my-2">
-                            <button class = "btn btn-success" type = "button">avg</button>
+                            <button id= "protein-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
                 </form>
@@ -166,9 +169,9 @@
                         </div>
                         <div class="col-3 my-2">
                             <div class="input-group">
-                                <input value = "100" id = "weight" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
+                                <input step = "5" value = "100" id = "weight" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
-                                    <span class="input-group-text">kg</span>
+                                    <span class="input-group-text">lbs</span>
                                 </div> 
                             </div>
                         </div>
