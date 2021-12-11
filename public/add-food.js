@@ -29,7 +29,7 @@ let lastClickedMeal = "";
 
 //On load: Get food object from DB, put into "currentMenu" object
 window.onload = async function() {
-  const apiLink = "http://localhost:8080/get-food/"
+  const apiLink = "/get-food/"
       let output = "";
       const response = await fetch(apiLink)
       if (response.ok) {
@@ -319,12 +319,15 @@ async function foodCheckout() {
             totalNutrients[k3] += nutrients[k3];
           }
         } else if(selectedList[labelCheck]){
-        }
+        } 
       }
     }
-    const checkoutObj = {"email":window.localStorage.getItem("userEmail"), "totalNutrients":totalNutrients};
+
+    const userEmail = window.location.href.split('/').pop();
+
+    const checkoutObj = {"email": userEmail, "totalNutrients": totalNutrients};
     if(Object.keys(selectedList).length !== 0){ //If checkout is not empty
-      let apiLink = "http://localhost:8080/checkout-add/"
+      let apiLink = "/checkout-add/"
       const response = await fetch(apiLink , {
           method: 'POST',
           headers: {
