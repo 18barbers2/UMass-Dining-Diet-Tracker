@@ -29,7 +29,7 @@ const session = {
     saveUninitialized: false
 };
 
-const mailPass = process.env.MAILPASS;
+const mailPass = process.env.MAILPASS || 'placeholder';
 
 // const strategy = new Strategy(
 //     {
@@ -315,16 +315,18 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
 });
 
 //TODO FIX THIS TO BE DYNAMIC FOR EACH USER
-app.post("/profile",(req, res) => {
+app.post("/profile/update", checkLoggedIn,(req, res) => {
     console.log("POST REQUEST RECEIVED");
     let data = req.body;
 
-    User.updateOne({email: "sambarber101@gmail.com"}, {$set: data}, (error, result) => {
+    User.updateOne({email: req.user["email"]}, {$set: data}, (error, result) => {
         if(error){
             console.log("ERROR SENDING TO DATABASE");
+            res.status(500);
         }
         else {
-            console.log("DATA SENT TO DATABASE");
+            console.log(`${req.user["email"]}'s GOALS UPDATED`);
+            res.status(200).redirect('/home');
         }
     });
 });
@@ -339,16 +341,22 @@ app.post("/forgot-password", async (req, res) => {
     
     const sendEmailTo = req.body["email"];
     const securityCode = req.body["secret"];
+
+    // update users passwordToken field
+
+    let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
     if(sendEmailTo === undefined){
         res.send({success: false, message: "EMAIL REQUIRED"});
     }
-    
     if(!(findUser)) {
         res.send({success: false, message: "No user with that email exists"});
         return;
     }
     
+    // const userResult = (await User.find({email: email}).exec())[0];
+
+
     
     // TODO: MIGHT WANT TO MAKE THIS ONLY EXECUTE ONCE IN THE BEGGINING FOR CREATING TRANSPORTER
     // create reusable transporter object using the default SMTP transport
