@@ -44,7 +44,8 @@ function getDailyGoalValues() {
             fat: fat,
             sodium: sodium,
             sugar: sugar
-        }
+        },
+        weightToday: weight
     };
     
     return goals;
