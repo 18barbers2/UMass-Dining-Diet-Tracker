@@ -27,7 +27,7 @@ const session = {
     saveUninitialized: false
 };
 
-const mailPass = process.env.MAILPASS || 'placeholder';
+const mailPass = process.env.MAILPASS || 'GE!JW/DYw2HBT-x5';
 
 // const strategy = new Strategy(
 //     {
@@ -196,9 +196,25 @@ app.get('/home', checkLoggedIn, (req, res) => {
     res.redirect('/home/' + req.user["email"]);
 });
 
-app.get('/home/:userID/', checkLoggedIn, (req, res) => {
+app.get('/home/:userID/', checkLoggedIn, async (req, res) => {
+
+    const today = new Date();
+    const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
     if (req.params.userID === req.user["email"]) {
+        //
+        console.log("WE'RE CHECKING FOR MACROHISTORY");
+        const q = User.find({email: req.user["email"]});
+        const user = await q.exec();
+        const newDay = {date:date, caloriesTotal:0, proteinTotal:0, carbohydratesTotal:0, cholesterolTotal:0, fatTotal:0, sodiumTotal:0, sugarTotal:0, weightToday:0};
+        console.log(user[0]);
+        console.log(user[0]["macroHistory"]["date"]);
+        console.log(date);
+
+        if(user[0]["macroHistory"][0]["date"] !== date){
+            await User.findOneAndUpdate({email: req.user["email"]}, {$push: {macroHistory: {$each: [newDay], $position: 0}}});
+        }
+
         console.log("serving home file");
         res.sendFile(__dirname + "/public/home.html");
     } else {
@@ -223,8 +239,12 @@ app.post('/create-account', (req, res) => {
 
     User.register(new User({username: username, email: email, lastName:lname, firstName: fname}), password, function(err, user) {
         if(err) {
+<<<<<<< Updated upstream
             console.log("error while creating account!", err);
             res.status(500).send(err);
+=======
+            console.log("error while creating account!"              );
+>>>>>>> Stashed changes
         }else {
             console.log("user registered!");
             res.redirect('/');
@@ -275,29 +295,33 @@ app.get('/get-food', (req, res) => {
 
 */
 app.post('/checkout-add', async (req, res) => {
-    console.log(JSON.stringify(req.body));
+    // console.log(JSON.stringify(req.body));
     const checkoutObj = req.body;
     const totalNutrients = checkoutObj.totalNutrients;
-    console.log(checkoutObj);
+    // console.log(checkoutObj);
     const query = User.find({email: checkoutObj.email});
     const result = await query.exec();
     const user = result[0];
-    console.log(user);
-    const macroHistory =  user["macroHistory"][0];
+    // console.log(user);
+    const macroHistory =  user["macroHistory"];
 
-    macroHistory["caloriesTotal"] += totalNutrients["calories"];
-    macroHistory["proteinTotal"] += totalNutrients["protein"];
-    macroHistory["carbohydratesTotal"] += totalNutrients["carbohydrates"];
-    macroHistory["cholesterolTotal"] += totalNutrients["cholesterol"];
-    macroHistory["fatTotal"] += totalNutrients["fat"];
-    macroHistory["sugarTotal"] += totalNutrients["sugar"];
-    macroHistory["sodiumTotal"] += totalNutrients["sodium"];
+    macroHistory[0]["caloriesTotal"] += totalNutrients["calories"];
+    macroHistory[0]["proteinTotal"] += totalNutrients["protein"];
+    macroHistory[0]["carbohydratesTotal"] += totalNutrients["carbohydrates"];
+    macroHistory[0]["cholesterolTotal"] += totalNutrients["cholesterol"];
+    macroHistory[0]["fatTotal"] += totalNutrients["fat"];
+    macroHistory[0]["sugarTotal"] += totalNutrients["sugar"];
+    macroHistory[0]["sodiumTotal"] += totalNutrients["sodium"];
 
-    const macroArray = [macroHistory];
-    console.log("MACRO ARRAY", macroArray);
+    console.log(macroHistory);
+    // const macroArray = [macroHistory];
+    // console.log("MACRO ARRAY", macroArray);
     await User.updateOne({email: checkoutObj.email}, {$set: {
-        macroHistory: macroArray
+        macroHistory: macroHistory
     }});
+    
+    // await User.findOneAndUpdate({email: req.user["email"]}, {$set: {macroHistory: {$each: [macroHistory], $position: 0}}});
+
 });
 
 // update Profile Daily Values
@@ -315,11 +339,12 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
 });
 
 //TODO FIX THIS TO BE DYNAMIC FOR EACH USER
-app.post("/profile/update", checkLoggedIn,(req, res) => {
+app.post("/profile/update", checkLoggedIn, async (req, res) => {
     console.log("POST REQUEST RECEIVED");
-    let data = req.body;
+    let goals = req.body["nutritionGoals"];
+    let weight = parseInt(req.body["weightToday"]);
 
-    User.updateOne({email: req.user["email"]}, {$set: data}, (error, result) => {
+    User.updateOne({email: req.user["email"]}, {$set: goals}, (error, result) => {
         if(error){
             console.log("ERROR SENDING TO DATABASE");
             res.status(500);
@@ -329,6 +354,20 @@ app.post("/profile/update", checkLoggedIn,(req, res) => {
             res.status(200).redirect('/home');
         }
     });
+
+    const query = User.find({email: req.user["email"]});
+    const result = await query.exec();
+    const user = result[0];
+
+    const macroHistory =  user["macroHistory"];
+    macroHistory[0]["weightToday"] = weight;
+
+    // console.log(macroHistory);
+
+    await User.updateOne({email: req.user["email"]}, {$set: {
+        macroHistory: macroHistory
+    }});
+
 });
 
 app.get('/forgot-password',(req,res) => {
@@ -343,21 +382,20 @@ app.post("/forgot-password", async (req, res) => {
     const securityCode = req.body["secret"];
 
     // update users passwordToken field
-
-    let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
     if(sendEmailTo === undefined){
         res.send({success: false, message: "EMAIL REQUIRED"});
+        return false;
     }
     if(!(findUser)) {
         res.send({success: false, message: "No user with that email exists"});
-        return;
+        return false;
     }
+
+    let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
     // const userResult = (await User.find({email: email}).exec())[0];
 
-
-    
     // TODO: MIGHT WANT TO MAKE THIS ONLY EXECUTE ONCE IN THE BEGGINING FOR CREATING TRANSPORTER
     // create reusable transporter object using the default SMTP transport
     const transporter = nodemailer.createTransport({
@@ -380,12 +418,12 @@ app.post("/forgot-password", async (req, res) => {
 
     transporter.sendMail(mailData, (error, info) => {
         if(error){
-            return console.log("THERE WAS AN ERROR SENDING EMAIL");
+            return console.log("THERE WAS AN ERROR SENDING EMAIL", info);
         }
         res.status(200).send({message: "Mail sent", message_id: info.messageId});
     });
 
-    res.redirect('/reset-password');
+    res.redirect('/reset-password/confirm');
 });
 
 app.get("/reset-password", (req, res) => {
@@ -393,12 +431,56 @@ app.get("/reset-password", (req, res) => {
     res.sendFile(__dirname + '/public/reset-password.html');
 });
 
-app.post("/reset-password", (req, res) => {
-    console.log("POSTING TO RESET-PASSWORD");
 
+app.post("/reset-password", async (req, res) => {
+    console.log("POSTING TO RESET-PASSWORD");
     const newPassword = req.body["newPassword"];
+    const email = req.body["email"];
+
+    let q = User.find({email: email});
+    let user = (await q.exec())[0];
+
+    //VERY INSECURE
+    user.setPassword(newPassword, (error, user)=> {
+        if(error) {
+            console.log("COULD NOT RESET PASSWORD");
+        }
+        else {
+            user.save();
+            console.log("PASSWORD RESET SUCCESSFULLY");
+            res.redirect('/sign-in');
+        }
+    });
 
 });
+
+app.get("/reset-password/confirm", (req, res) => {
+    console.log("serving confirm-reset");
+    res.sendFile(__dirname + '/public/confirm-reset.html');
+});
+
+app.post("/reset-password/confirm", async (req, res) => {
+    console.log("POSTING TO confirm-reset");
+    // res.sendFile(__dirname + '/public/confirm-reset.html');
+
+    let email = req.body["email"];
+    let secret = req.body["secret"];
+
+    
+    let q = User.find({email: email});
+    let user = (await q.exec())[0];
+
+    if(JSON.stringify(user["passwordResetToken"]) === secret && JSON.stringify(user["passwordResetToken"]) !== 9999999){
+        await User.findOneAndUpdate({email: email}, {passwordResetToken: 9999999});
+        res.status(200);
+        res.redirect("/reset-password");
+    }else {
+        console.log("ERROR CONFIRMING SECURE CODE");
+        res.sendStatus(500);
+    }
+
+});
+
 
 app.post('/delete/password', (req, res) => {
     const email = JSON.parse(req.body);
@@ -408,7 +490,7 @@ app.post('/delete/password', (req, res) => {
     res.end();
 });
 
-app.post('/user/schema', async (req, res) => {
+app.post('/user/schema',checkLoggedIn, async (req, res) => {
     console.log("USER SCHEMA");
     console.log(req.body);
     const request  = req.body;
