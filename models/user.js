@@ -49,11 +49,11 @@ const userSchema = new Schema({
         },
         sodium: {
             type: Number,
-            default: 3400
+            default: 2000
         },
         sugar: {
             type: Number,
-            default: 125
+            default: 24
         }
     },
     passwordResetToken: Number
