@@ -28,53 +28,27 @@ const session = {
 };
 
 const mailPass = process.env.MAILPASS || 'GE!JW/DYw2HBT-x5';
-
-// const strategy = new Strategy(
-//     {
-//         usernameField: 'email',
-//         passwordField: 'password'
-//     },
-//     async (email, password, done) => {
-//         console.log("STRATEGY STARTING");
-// 	if (!(await findUser(email))) {
-// 	    // no such user
-// 	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
-// 	    return done(null, false, { 'message' : 'Wrong username' });
-// 	}
-// 	if (!(await validatePassword(email, password))) {
-// 	    // invalid password
-// 	    // should disable logins after N messages
-// 	    // delay return to rate-limit brute-force attacks
-// 	    await new Promise((r) => setTimeout(r, 2000)); // two second delay
-// 	    return done(null, false, { 'message' : 'Wrong password' });
-// 	}
-// 	// success!
-// 	// should create a user object here, associated with a unique identifier
-// 	return done(null, email);
-// });
+const transporter = nodemailer.createTransport({
+    port: 465,               // true for 465, false for other ports
+    host: "smtp.gmail.com",
+    auth: {
+        user: 'umassmacrotracker@gmail.com',
+        pass: mailPass,
+    },
+    secure: true,
+});
 
 app.use(express.json());
 app.use("/", express.static("public"));
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(expressSession(session));
-// passport.use(strategy);
 
-// testing how to use mongoose authentication
 // passport.use(new Strategy(User.authenticate()));
 passport.use(User.createStrategy());
 
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('html'));
-
-// // Convert user object to a unique identifier.
-// passport.serializeUser((email, done) => {
-//     done(null, email);
-// });
-// // Convert a unique identifier to a user object.
-// passport.deserializeUser((uid, done) => {
-//     done(null, uid);
-// });
 
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser());
@@ -119,51 +93,7 @@ async function findUser(email) {
     return true;
 }
 
-// async function validatePassword(email, pwd) {
-//     if (!(await findUser(email))) {
-// 	    return false;
-//     }
-
-//     const q = User.find({email:email});
-//     const queryResult = await q.exec();
-//     const [salt, hash] = queryResult[0].password;
-
-//     const res = mc.check(pwd, salt, hash);
-
-//     return res;
-// }
-
-// async function addUser(fname, lname, email, username, pwd) {
-//     if (await findUser(email)) {
-// 	    return false;
-//     }
-
-//     const [salt, hash] = mc.hash(pwd);
-
-//     const newUserData = {
-//         username: username,
-//         firstName: fname,
-//         lastName: lname,
-//         email: email,
-//         password: [salt, hash],
-//         macroHistory: [],
-//         nutritionGoals : {
-//             calories: 2000,
-//             protein: 50,
-//             carbohydrates: 300,
-//             cholesterol: 250,
-//             fat: 50,
-//             sodium: 3400,
-//             sugar: 125
-//         }
-//     }
-
-//     const newUser = new User(newUserData);
-//     newUser.save();
-//     return true;
-// }
-
-app.get('/', /*checkLoggedIn, */ (req, res) => {
+app.get('/', (req, res) => {
     console.log("REDIRECTING TO SIGN-IN")
     res.redirect("/sign-in");
 });
@@ -202,14 +132,9 @@ app.get('/home/:userID/', checkLoggedIn, async (req, res) => {
     const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
     if (req.params.userID === req.user["email"]) {
-        //
-        console.log("WE'RE CHECKING FOR MACROHISTORY");
         const q = User.find({email: req.user["email"]});
         const user = await q.exec();
         const newDay = {date:date, caloriesTotal:0, proteinTotal:0, carbohydratesTotal:0, cholesterolTotal:0, fatTotal:0, sodiumTotal:0, sugarTotal:0, weightToday:0};
-        console.log(user[0]);
-        console.log(user[0]["macroHistory"]["date"]);
-        console.log(date);
 
         if(user[0]["macroHistory"][0]["date"] !== date){
             await User.findOneAndUpdate({email: req.user["email"]}, {$push: {macroHistory: {$each: [newDay], $position: 0}}});
@@ -239,12 +164,8 @@ app.post('/create-account', (req, res) => {
 
     User.register(new User({username: username, email: email, lastName:lname, firstName: fname}), password, function(err, user) {
         if(err) {
-<<<<<<< Updated upstream
             console.log("error while creating account!", err);
             res.status(500).send(err);
-=======
-            console.log("error while creating account!"              );
->>>>>>> Stashed changes
         }else {
             console.log("user registered!");
             res.redirect('/');
@@ -275,26 +196,23 @@ app.get('/get-food', (req, res) => {
             console.log("ERROR FETCHING USER DATA");
         }
         else {
-            //console.log(docs.Berkshire);
             res.send(docs);
         }
     });
-   // console.log(JSON.stringify(dbFood));
-    
 });
 
 
-/* CHECKOUT WITH DATABASE
-1. Add added items from checkout into "selected items"
-2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
-3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
-4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
-*/
-/* NOTES:
-1. should use user id for updating/adding? How would i get the correct user ID for updating
-
-*/
 app.post('/checkout-add', async (req, res) => {
+    /* CHECKOUT WITH DATABASE
+    1. Add added items from checkout into "selected items"
+    2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
+    3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
+    4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
+    */
+    /* NOTES:
+    1. should use user id for updating/adding? How would i get the correct user ID for updating
+    
+    */
     // console.log(JSON.stringify(req.body));
     const checkoutObj = req.body;
     const totalNutrients = checkoutObj.totalNutrients;
@@ -313,15 +231,10 @@ app.post('/checkout-add', async (req, res) => {
     macroHistory[0]["sugarTotal"] += totalNutrients["sugar"];
     macroHistory[0]["sodiumTotal"] += totalNutrients["sodium"];
 
-    console.log(macroHistory);
-    // const macroArray = [macroHistory];
-    // console.log("MACRO ARRAY", macroArray);
     await User.updateOne({email: checkoutObj.email}, {$set: {
         macroHistory: macroHistory
     }});
     
-    // await User.findOneAndUpdate({email: req.user["email"]}, {$set: {macroHistory: {$each: [macroHistory], $position: 0}}});
-
 });
 
 // update Profile Daily Values
@@ -338,9 +251,7 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
     }
 });
 
-//TODO FIX THIS TO BE DYNAMIC FOR EACH USER
 app.post("/profile/update", checkLoggedIn, async (req, res) => {
-    console.log("POST REQUEST RECEIVED");
     let goals = req.body["nutritionGoals"];
     let weight = parseInt(req.body["weightToday"]);
 
@@ -361,8 +272,6 @@ app.post("/profile/update", checkLoggedIn, async (req, res) => {
 
     const macroHistory =  user["macroHistory"];
     macroHistory[0]["weightToday"] = weight;
-
-    // console.log(macroHistory);
 
     await User.updateOne({email: req.user["email"]}, {$set: {
         macroHistory: macroHistory
@@ -394,19 +303,6 @@ app.post("/forgot-password", async (req, res) => {
 
     let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
-    // const userResult = (await User.find({email: email}).exec())[0];
-
-    // TODO: MIGHT WANT TO MAKE THIS ONLY EXECUTE ONCE IN THE BEGGINING FOR CREATING TRANSPORTER
-    // create reusable transporter object using the default SMTP transport
-    const transporter = nodemailer.createTransport({
-        port: 465,               // true for 465, false for other ports
-        host: "smtp.gmail.com",
-        auth: {
-            user: 'umassmacrotracker@gmail.com',
-            pass: mailPass,
-        },
-        secure: true,
-    });
 
     const mailData = {
         from: 'umassmacrotracker@gmail.com',  // sender address
@@ -481,18 +377,7 @@ app.post("/reset-password/confirm", async (req, res) => {
 
 });
 
-
-app.post('/delete/password', (req, res) => {
-    const email = JSON.parse(req.body);
-    console.log(`account data recieved: ${JSON.stringify(acctData)}`);
-    deleteEmail(email);
-    const deleteEmail = (data) => true;
-    res.end();
-});
-
 app.post('/user/schema',checkLoggedIn, async (req, res) => {
-    console.log("USER SCHEMA");
-    console.log(req.body);
     const request  = req.body;
     const q = User.find({email: request["email"]});
     const response = await q.exec();
