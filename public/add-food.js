@@ -49,8 +49,11 @@ window.onload = async function() {
       }  
 }
 
+/* 
+Adds a label to the food table, which I just display text
+*/
 function foodTableAddLabel(name) {
-  console.log("Label: " + name)
+  
   const table = document.getElementById("foodTable");
   let row = table.insertRow(-1);
   let foodEntry = row.insertCell(-1);
@@ -87,7 +90,7 @@ async function foodTableUpdate(event){
         lastClickedMeal = "Breakfast";
         
       }
-      //console.log(hallMenu.breakfast_menu[0].foodName); //this gets first food name in hall's breakfast menu
+    
     } else if(buttonType === "lunchBtn" && hallMenu.lunch_menu){
       for(let i = 0; i < hallMenu.lunch_menu.length; i++) {
         const lunchMenuItem = hallMenu.lunch_menu[i].foodName;
@@ -129,11 +132,8 @@ async function foodTableUpdate(event){
   } else if(diningHalls.includes(buttonType)){
     //add check to see if dining hall exists, so we can display it doesn't
       if(buttonType === "frank"){
-        //console.log(currentMenu.Franklin);
         hallMenu = currentMenu.Franklin;
         lunchButton.click();
-        //console.log(hallMenu);
-        //console.log(JSON.stringify(hallMenu));
       } else if(buttonType === "worcester") {
           hallMenu = currentMenu.Worcester;
           lunchButton.click();
@@ -153,7 +153,6 @@ async function foodTableUpdate(event){
       foodFormat.appendChild(foodText);
       cont.appendChild(foodFormat);
   }
-  //console.log(lastClickedMeal);
   displayText.innerHTML = `Current menu: ${lastClickedMeal}`;
 }
 /*
