@@ -3,22 +3,28 @@ import passportLocalMongoose from 'passport-local-mongoose';
 
 const Schema = mongoose.Schema;
 
+const today = new Date();
+const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
+
 const userSchema = new Schema({
     username: String,
     firstName: String,
     lastName: String,
     email: String,
-    macroHistory: [{
-        date: String,
-        caloriesTotal: Number,
-        proteinTotal: Number,
-        carbohydratesTotal: Number,
-        cholesterolTotal: Number,
-        fatTotal: Number,
-        sodiumTotal: Number,
-        sugarTotal: Number,
-        weightTotal: Number
-    }],
+    macroHistory: {
+        type: Array, 
+        default: [{
+            date: date,
+            caloriesTotal: 0,
+            proteinTotal: 0,
+            carbohydratesTotal: 0,
+            cholesterolTotal: 0,
+            fatTotal: 0,
+            sodiumTotal: 0,
+            sugarTotal: 0,
+            weightTotal: 0
+        }]
+    },
     nutritionGoals : {
         calories: {
             type: Number, 
@@ -48,8 +54,9 @@ const userSchema = new Schema({
             type: Number,
             default: 125
         }
-    }
-}, );
+    },
+    passwordResetToken: Number
+},);
 
 const foodSchema = new Schema({
     Berkshire: Schema.Types.Mixed,
