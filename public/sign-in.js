@@ -20,6 +20,7 @@ async function loginUser() {
             headers: {'Content-Type': 'application/json'}
         });
         window.location = file.url;
+        
     } else { //one or both of the fields is empty
         alert("One or more of the required fields is empty");
     }
