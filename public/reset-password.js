@@ -2,11 +2,6 @@
 const resetPasswordButton = document.getElementById("reset-password");
 resetPasswordButton.addEventListener('click', async () => sendReset());
 
-// window.addEventListener("load", () => {
-//     console.log("WILL THIS THING BE HIDDEN?")
-//     document.getElementById("password-form").style.display = "none";
-// });
-
 async function sendReset() {
     
     const newPass = document.getElementById("new-password").value;
@@ -16,10 +11,13 @@ async function sendReset() {
         alert("Passwords do not match!");
         return;
     }
+    if(newPass === "") {
+        alert("Passwords cannot be empty!");
+        return;
+    }
 
     let endpoint = `/reset-password`;
     const data = JSON.stringify({newPassword: newPass, email: window.localStorage.getItem("userEmail")});
-    // console.log("SENDING ACCOUNT DATA");
     const response = await fetch(endpoint , {
         method: 'POST',
         body: data,
@@ -28,13 +26,12 @@ async function sendReset() {
         }
     });
 
-    console.log(response.status);
-
     if(response.ok) {
         alert("PASSWORD RESET");
         window.location = response.url;
     } else {
         alert("ERROR RESETTING PASSWORD");
     }
+    window.localStorage.clear();
 
 }

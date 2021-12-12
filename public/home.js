@@ -1,10 +1,6 @@
 'use strict';
 
-// import {User} from './models/user.js';
-
 let userData = {};
-
-// window.addEventListener("load", () => {loadName(); loadGoals(); loadCalories(); loadWeight()});
 window.addEventListener("load", async () => {await loadData(); loadName(); loadGoals(); loadCalories(); loadWeight();});
 
 
@@ -27,7 +23,6 @@ function loadName() {
 function loadGoals() {
 
     const goals = userData["nutritionGoals"];
-    console.log(goals);
     let calories;
     let fat;
     let protein;
@@ -45,11 +40,9 @@ function loadGoals() {
     let cholesterolLimit;
     
     const currentNutritionValues = userData["macroHistory"][0];
-    console.log(currentNutritionValues);
     
     // if there is not macroHistory then assign default values for graphs and stuff
-    const currentDate = "TODO: INPUT DATE";
-    if(userData["macroHistory"].length === 0 /*|| userData["macroHistory"]["date"] !== currentDate*/) {
+    if(userData["macroHistory"].length === 0) {
         calories = 0;
         fat = 0;
         protein = 0;
@@ -75,45 +68,53 @@ function loadGoals() {
     carbohydratesLimit = goals["carbohydrates"];
     cholesterolLimit = goals["cholesterol"];
 
-    console.log(calories, fat, protein,sodium,sugar,carbohydrates);
+    let progressScore = 0;
+
     //set progress bars
     let bar = document.getElementById("calorie-progress");
     let percentage = Math.floor(100 * (calories / calorieLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("carbs-progress");
     percentage = Math.floor(100 * (carbohydrates / carbohydratesLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("protein-progress");
     percentage = Math.floor(100 * (protein/proteinLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("fat-progress");
     percentage = Math.floor(100 * (fat / fatLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("sodium-progress");
     percentage = Math.floor(100 * (sodium / sodiumLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("sugar-progress");
     percentage = Math.floor(100 * (sugar / sugarLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
     bar = document.getElementById("cholesterol-progress");
     percentage = Math.floor(100 * (cholesterol / cholesterolLimit));
+    progressScore += Math.min(percentage, 100);
     bar.style.setProperty("width",`${percentage}%`);
     bar.innerText = `${percentage}%`;
 
-    let healthScore = Math.floor(Math.random()*10);
-    document.getElementById("health-score").innerText = `Overall Healthiness Score: ${healthScore}`;
+    let healthScore = Math.floor(progressScore / 7);
+    document.getElementById("health-score").innerText = `Overall Progress Score: ${healthScore} / 100`;
 }
 
 function loadWeight() {
@@ -128,7 +129,6 @@ function loadWeight() {
 
     for(let i = 0; i < length; i++) {
         let date = dietHistory[i]["date"];
-        console.log(`THE DATE IS: ${date}`);
         labels.push(date);
         dataPoints.push(dietHistory[i]["weightToday"]);
     }
@@ -140,9 +140,9 @@ function loadWeight() {
     const data = {
         labels: labels,
         datasets: [{
-          label: 'My First dataset',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
+          label: 'Weight',
+          backgroundColor: '#AA00FF',
+          borderColor: '#AA00FF',
           data: dataPoints,
         }]
     };
@@ -172,7 +172,6 @@ function loadCalories() {
 
     for(let i = 0; i < length; i++) {
         let date = dietHistory[i]["date"];
-        console.log(`THE DATE IS: ${date}`);
         labels.push(date);
         dataPoints.push(dietHistory[i]["caloriesTotal"]);
     }
@@ -185,8 +184,24 @@ function loadCalories() {
         labels: labels,
         datasets: [{
           label: 'Calories',
-          backgroundColor: 'rgb(255, 99, 132)',
-          borderColor: 'rgb(255, 99, 132)',
+          backgroundColor: [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(255, 159, 64, 0.8)',
+            'rgba(255, 205, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(153, 102, 255, 0.8)',
+            'rgba(201, 203, 207, 0.8)'
+          ],
+          borderColor: [
+            'rgba(255, 99, 132, 0.8)',
+            'rgba(255, 159, 64, 0.8)',
+            'rgba(255, 205, 86, 0.8)',
+            'rgba(75, 192, 192, 0.8)',
+            'rgba(54, 162, 235, 0.8)',
+            'rgba(153, 102, 255, 0.8)',
+            'rgba(201, 203, 207, 0.8)'
+          ],
           data: dataPoints,
         }]
     };

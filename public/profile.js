@@ -1,7 +1,6 @@
 'use strict';
 async function updateDailyGoals() {
     console.log("BUTTON CLICKED UPDATING GOALS");
-    
     const dailyGoals = JSON.stringify(getDailyGoalValues());
 
     let endpoint = `/profile/update`;
@@ -25,7 +24,6 @@ async function updateDailyGoals() {
 
 function getDailyGoalValues() {
 
-    // note: could be changed to loop if html is changed
     const calories = document.getElementById("calorie-goal").value;
     const carbohydrates = document.getElementById("carbohydrates-goal").value;
     const fat = document.getElementById("fat-goal").value;

@@ -188,7 +188,7 @@ app.get('/checkout-food/:userID/', checkLoggedIn, (req, res) => {
 });
 
 // Recieves simple object of form {dinginHall: "name"}. Should be used to grab correct food from DB based on name
-app.get('/get-food', (req, res) => {
+app.get('/get-food',checkLoggedIn,  (req, res) => {
     
     
     let menu = Food.findOne(function (error, docs) {
@@ -252,10 +252,13 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
 });
 
 app.post("/profile/update", checkLoggedIn, async (req, res) => {
+    console.log("DEBUG GOALS",req.body);
+    console.log("DEBUG GOALS",req.user["email"]);
     let goals = req.body["nutritionGoals"];
     let weight = parseInt(req.body["weightToday"]);
 
-    User.updateOne({email: req.user["email"]}, {$set: goals}, (error, result) => {
+    User.findOneAndUpdate({email: req.user["email"]}, {$set: {nutritionGoals: goals}}, (error, result) => {
+        console.log(result);
         if(error){
             console.log("ERROR SENDING TO DATABASE");
             res.status(500);
@@ -296,14 +299,13 @@ app.post("/forgot-password", async (req, res) => {
         res.send({success: false, message: "EMAIL REQUIRED"});
         return false;
     }
-    if(!(findUser)) {
-        res.send({success: false, message: "No user with that email exists"});
+    if(!(await findUser(sendEmailTo))) {
+        res.status(500).send({success: false, message: "No user with that email exists"});
         return false;
     }
 
     let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
-
     const mailData = {
         from: 'umassmacrotracker@gmail.com',  // sender address
         to: sendEmailTo,   // list of receivers
@@ -340,6 +342,7 @@ app.post("/reset-password", async (req, res) => {
     user.setPassword(newPassword, (error, user)=> {
         if(error) {
             console.log("COULD NOT RESET PASSWORD");
+            res.status(500).send({success:false, error: "THE PASSWORD COULD NOT BE RESET"});
         }
         else {
             user.save();

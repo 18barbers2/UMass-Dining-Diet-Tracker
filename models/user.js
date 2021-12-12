@@ -4,7 +4,6 @@ import passportLocalMongoose from 'passport-local-mongoose';
 const Schema = mongoose.Schema;
 
 const today = new Date();
-// const date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 const date = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`;
 
 const userSchema = new Schema({

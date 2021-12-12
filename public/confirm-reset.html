@@ -6,7 +6,7 @@
         <base href="/public">
     </head>
     <body>
-        <div class = "container my-5 p-4 border border-primary">
+        <div class = "container my-5 p-4 border border-secondary border-2">
             <div class = "row">
                 <h3 class = " display-5 col-sm-6 offset-sm-3 text-center">
                     Confirm Code
@@ -15,15 +15,15 @@
             <div class="row">
                 <div class="col-sm-8 offset-sm-2">
                     <div class="card text-center" id = "security-form">
-                        <div class="card-body">
+                        <div class="card-body border border-1">
                             <h5 class="card-title">Enter Security Code!</h5>
                             <div class="col-sm-6 offset-sm-3">
-                                <div class="form-floating ">
-                                    <input type="number" class="form-control" id="security-code" placeholder="name@example.com" required>
+                                <div class="form-floating mb-3">
+                                    <input type="number" class="form-control" id="security-code" required>
                                     <label for="security-code">Code</label>
                                 </div>
                             </div>
-                            <input type = "button" id = "submit-code" class="btn btn-danger btn-lg" role="button" aria-pressed="true" value = "Submit"/>
+                            <input type = "button" id = "submit-code" class="btn btn-warning btn-lg" role="button" aria-pressed="true" value = "Submit"/>
                         </div>
                     </div>
                 </div>

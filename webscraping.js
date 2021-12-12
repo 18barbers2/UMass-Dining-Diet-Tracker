@@ -13,7 +13,7 @@ try {
         await runCronJob();
     });
 
-    await new Promise((r) => setTimeout(r, 20000)); // two second delay
+    await new Promise((r) => setTimeout(r, 20000)); // twenty second delay
     mongoose.connection.close();
 
 }

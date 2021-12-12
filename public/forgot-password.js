@@ -11,8 +11,6 @@ async function sendResetEmail() {
   let securityCode = Math.floor(Math.random() * (999999 - 100000 + 1)) + 100000;
 
   const data = JSON.stringify({email: email, secret: securityCode});
-  console.log("SENDING ACCOUNT DATA");
-
   const response = await fetch(endpoint , {
       method: 'POST',
       body: data, 
@@ -28,6 +26,8 @@ async function sendResetEmail() {
     window.location = response.url;
     window.localStorage.setItem("userEmail", email);
   }
-  console.log(response.status);
+  else {
+    alert("ERROR, Not A Valid Email");
+  }
 
 }

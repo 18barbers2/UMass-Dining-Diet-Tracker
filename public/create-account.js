@@ -9,7 +9,6 @@ async function sendAccountData() {
     const accountInfo = getAccountInfo();
 
     if (accountInfo !== '{}') { //checks if all the fields were entered correctly
-        console.log("SENDING ACCOUNT DATA");
         const response = await fetch(endpoint , {
             method: 'POST',
             body: accountInfo,

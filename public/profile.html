@@ -4,6 +4,7 @@
         <title>Diet Tracker Profile</title>
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
         <link rel="stylesheet" href="./profile-style.css">
+        <link rel = "shortcut icon" type= "image/png" href="https://img.icons8.com/fluency/48/000000/edit-user-female.png"/>
         <base href="/public">
     </head>
     <body>
@@ -16,28 +17,28 @@
             <div class="navbar-collapse w-100">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a href="/checkout-food" class = "nav-link">Add Food</a>
+                        <a href="/checkout-food" class = "nav-link text-light">Add Food</a>
                     </li>
                     <li class="nav-item">
-                        <a href="/profile" class = "nav-link">My Profile</a>
+                        <a href="/profile" class = "nav-link text-light">My Profile</a>
                     </li>
                     <li>
-                        <a href="/logout" class = "nav-link">Logout</a>
+                        <a href="/logout" class = "nav-link text-light">Logout</a>
                     </li>
                 </ul>
             </div>
         </nav>
 
-            <h1 class = "jumbotron border display-5 text-center mt-2">Settings</h1>
-            <div class="container border border-info pt-3" id="daily-goals">
+            <h1 class = "jumbotron display-5 text-center mt-2">Profile</h1>
+            <div class="container border border-secondary pt-3" id="daily-goals">
                 <form>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="calorie-goal" class="form-label">
                                 <h1>Daily Calorie Goal</h1>
                             </label>
                         </div>
-                        <div class="col-4 my-2">
+                        <div class="col-4 my-2 ">
                             <div class="input-group">
                                 <input step = "5" value = "100" id = "calorie-goal" type="number" class="form-control" placeholder="value" aria-label="Recipient's username" aria-describedby="basic-addon2">
                                 <div class="input-group-append">
@@ -49,7 +50,7 @@
                             <button id= "calorie-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="carbs-goal" class="form-label">
                                 <h1>Daily Carbohydrates Goal</h1>
@@ -67,7 +68,7 @@
                             <button id= "carbohydrates-avg-button" class = "btn btn-success avg-button" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="fat-goal" class="form-label">
                                 <h1>Daily Fat Goal</h1>
@@ -85,7 +86,7 @@
                             <button id= "fat-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="sodium-goal" class="form-label">
                                 <h1>Daily Sodium Goal</h1>
@@ -103,7 +104,7 @@
                             <button id= "sodium-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="cholesterol-goal" class="form-label">
                                 <h1>Daily Cholesterol Goal</h1>
@@ -121,7 +122,7 @@
                             <button id= "cholesterol-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 border-bottom border-secondary">
                         <div class="col-7 text-center">
                             <label for="sugar-goal" class="form-label">
                                 <h1>Daily Sugar Goal</h1>
@@ -139,7 +140,7 @@
                             <button id= "sugar-avg-button" class = "btn btn-success" type = "button">avg</button>
                         </div>
                     </div>
-                    <div class="row border border-warning my-2">
+                    <div class="row my-2 ">
                         <div class="col-7 text-center">
                             <label for="protein-goal" class="form-label">
                                 <h1>Daily Protein Goal</h1>
@@ -159,7 +160,7 @@
                     </div>
                 </form>
             </div>
-            <div class="container border border-dark mt-4 p-4">
+            <div class="container border border-secondary mt-4 p-4">
                 <form>
                     <div class="row justify-content-center">
                         <div class="col-3 text-center">
@@ -178,9 +179,9 @@
                     </div>
                 </form>
             </div>
-            <div class="row border justify-content-center mt-3">
+            <div class="row justify-content-center mt-3">
                 <div class="col-6 text-center">
-                    <button type = "button" id = "update-nutrition" class = "btn btn-lg btn-primary" >Update</button>
+                    <button type = "button" id = "update-nutrition" class = "btn btn-lg btn-success" >Update</button>
                 </div>
             </div>
         </div>

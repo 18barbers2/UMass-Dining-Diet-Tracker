@@ -4,7 +4,6 @@ const submitCode = document.getElementById("submit-code");
 submitCode.addEventListener('click', async () => confirmCode());
 
 async function confirmCode() {
-    console.log("CODE SUBMITTED");
     const endpoint = '/reset-password/confirm';
 
     let code = document.getElementById("security-code").value;
@@ -20,7 +19,6 @@ async function confirmCode() {
         }
     });
 
-    console.log(response.status);
     if(response.ok){
         window.location = response.url;
 
