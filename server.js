@@ -1,25 +1,21 @@
 'use strict';
 
 import dotenv from 'dotenv';
-dotenv.config();
 import expressSession from 'express-session';
 import passport from 'passport';
-import LocalStrategy from 'passport-local';
-import minicrypt from './public/miniCrypt.js';
 import express from "express";
 import path from 'path';
 import { fileURLToPath } from 'url';
 import mongoose from 'mongoose';
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 import { User, Food } from './models/user.js';
 import nodemailer from 'nodemailer';
 
+dotenv.config();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 const port = process.env.PORT || 8080;
 const app = express();
-// const Strategy = LocalStrategy.Strategy;
-// const mc = new minicrypt();
-
 
 const session = {
     secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
@@ -42,16 +38,18 @@ app.use(express.json());
 app.use("/", express.static("public"));
 app.use(express.urlencoded({'extended' : true})); // allow URLencoded data
 app.use(expressSession(session));
-
-// passport.use(new Strategy(User.authenticate()));
 passport.use(User.createStrategy());
-
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.static('html'));
 
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser());
+
+const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
+const dbname = 'umass_diet_tracker_database';
+const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
+const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
 
 function checkLoggedIn(req, res, next) {
     if (req.isAuthenticated()) {
@@ -63,11 +61,7 @@ function checkLoggedIn(req, res, next) {
     }
 }
 
-const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
-const dbname = 'umass_diet_tracker_database';
-const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
-const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
-
+// server runs after connection to database
 try {
     mongoose.connect(url, connectionParams);
     mongoose.connection.once('open',() => {
@@ -80,8 +74,8 @@ catch (error) {
     console.log("ISSUE WITH CONNECTING TO DATABASE");
 }
 
+// finds user
 async function findUser(email) {
-    console.log("FINDING THE USER")
     const q = User.find({email: email});
     const result = await q.exec();
 
@@ -89,23 +83,20 @@ async function findUser(email) {
         console.log("USER NOT FOUND")
         return false;
     }
-    console.log("USER FOUND");
     return true;
 }
 
 app.get('/', (req, res) => {
-    console.log("REDIRECTING TO SIGN-IN")
     res.redirect("/sign-in");
 });
 
 app.get('/sign-in',(req, res) => {
-    console.log("serving sign-in");
     res.sendFile(__dirname + '/public/sign-in.html');
 });
 
-app.post('/sign-in', passport.authenticate('local', {     // use username/password authentication
-    'successRedirect' : '/home',   // when we login, go to /home
-    'failureRedirect' : '/sign-in', // otherwise, back to login
+app.post('/sign-in', passport.authenticate('local', {
+    'successRedirect' : '/home', 
+    'failureRedirect' : '/sign-in',
 }), (err, user) => {
     if(err) {
         res.json({success: false, message: err});
@@ -115,11 +106,33 @@ app.post('/sign-in', passport.authenticate('local', {     // use username/passwo
     }
 });
 
+// CREATE ACCOUNT
+app.get('/create-account', (req, res) => {
+    res.sendFile(__dirname + '/public/create-account.html');
+});
+
+app.post('/create-account', (req, res) => {    
+    const lname = req.body.lname;
+    const fname = req.body.fname;
+    const email = req.body.email;
+    const username = req.body.username;
+    const password = req.body.password;
+
+    User.register(new User({username: username, email: email, lastName:lname, firstName: fname}), password, function(err, user) {
+        if(err) {
+            console.log("error while creating account!", err);
+            res.status(500).send(err);
+        }else {
+            console.log("user registered!");
+            res.redirect('/');
+        }
+    });
+
+});
 
 app.get("/logout", (req, res) => {
-    console.log("LOGGING OUT");
     req.logout();
-    res.redirect("/")
+    res.redirect("/");
 });
 
 app.get('/home', checkLoggedIn, (req, res) => {
@@ -139,40 +152,12 @@ app.get('/home/:userID/', checkLoggedIn, async (req, res) => {
         if(user[0]["macroHistory"][0]["date"] !== date){
             await User.findOneAndUpdate({email: req.user["email"]}, {$push: {macroHistory: {$each: [newDay], $position: 0}}});
         }
-
-        console.log("serving home file");
         res.sendFile(__dirname + "/public/home.html");
     } else {
         res.redirect('/sign-in');
     }
 });
 
-// CREATE ACCOUNT
-app.get('/create-account', (req, res) => {
-    console.log("serving create-account");
-    res.sendFile(__dirname + '/public/create-account.html');
-});
-
-app.post('/create-account', (req, res) => {
-    console.log("POST TO CREATE ACCOUNT");
-    
-    const lname = req.body.lname;
-    const fname = req.body.fname;
-    const email = req.body.email;
-    const username = req.body.username;
-    const password = req.body.password;
-
-    User.register(new User({username: username, email: email, lastName:lname, firstName: fname}), password, function(err, user) {
-        if(err) {
-            console.log("error while creating account!", err);
-            res.status(500).send(err);
-        }else {
-            console.log("user registered!");
-            res.redirect('/');
-        }
-    });
-
-});
 
 app.get('/checkout-food', checkLoggedIn, (req, res) => {
     res.redirect('/checkout-food/' + req.user["email"]);
@@ -203,24 +188,11 @@ app.get('/get-food',checkLoggedIn,  (req, res) => {
 
 
 app.post('/checkout-add', async (req, res) => {
-    /* CHECKOUT WITH DATABASE
-    1. Add added items from checkout into "selected items"
-    2. Send those items to endpoint in server of form {"food" : 1 } (later add multiple functionality)
-    3. At endpoint, take those items, calculate the total nutrient value from them by accessing food collection and searching for each food
-    4. With the total nutrients, add/update the user's macros (user->foodHistory->macros->(macroDocument))
-    */
-    /* NOTES:
-    1. should use user id for updating/adding? How would i get the correct user ID for updating
-    
-    */
-    // console.log(JSON.stringify(req.body));
     const checkoutObj = req.body;
     const totalNutrients = checkoutObj.totalNutrients;
-    // console.log(checkoutObj);
     const query = User.find({email: checkoutObj.email});
     const result = await query.exec();
     const user = result[0];
-    // console.log(user);
     const macroHistory =  user["macroHistory"];
 
     macroHistory[0]["caloriesTotal"] += totalNutrients["calories"];
@@ -252,13 +224,10 @@ app.get("/profile/:userID/", checkLoggedIn, (req, res) => {
 });
 
 app.post("/profile/update", checkLoggedIn, async (req, res) => {
-    console.log("DEBUG GOALS",req.body);
-    console.log("DEBUG GOALS",req.user["email"]);
     let goals = req.body["nutritionGoals"];
     let weight = parseInt(req.body["weightToday"]);
 
     User.findOneAndUpdate({email: req.user["email"]}, {$set: {nutritionGoals: goals}}, (error, result) => {
-        console.log(result);
         if(error){
             console.log("ERROR SENDING TO DATABASE");
             res.status(500);
@@ -283,18 +252,14 @@ app.post("/profile/update", checkLoggedIn, async (req, res) => {
 });
 
 app.get('/forgot-password',(req,res) => {
-    console.log("serving forgot-password");
     res.sendFile(__dirname + '/public/forgot-password.html');
 });
 
-app.post("/forgot-password", async (req, res) => {
-    console.log("POSTING TO FORGOT PASSWORD");
-    
+app.post("/forgot-password", async (req, res) => {    
     const sendEmailTo = req.body["email"];
     const securityCode = req.body["secret"];
 
     // update users passwordToken field
-    
     if(sendEmailTo === undefined){
         res.send({success: false, message: "EMAIL REQUIRED"});
         return false;
@@ -304,7 +269,7 @@ app.post("/forgot-password", async (req, res) => {
         return false;
     }
 
-    let doc = await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
+    await User.findOneAndUpdate({email: sendEmailTo}, {passwordResetToken: securityCode});
     
     const mailData = {
         from: 'umassmacrotracker@gmail.com',  // sender address
@@ -312,7 +277,7 @@ app.post("/forgot-password", async (req, res) => {
         subject: 'Password Reset Requested for UMass Dining Macro Tracker',
         text: 'That was easy!',
         html: `<p>Hey there!</p><p>Security code: <b>${securityCode}</b> </p>`
-        };
+    };
 
     transporter.sendMail(mailData, (error, info) => {
         if(error){
@@ -325,20 +290,17 @@ app.post("/forgot-password", async (req, res) => {
 });
 
 app.get("/reset-password", (req, res) => {
-    console.log("serving reset-password");
     res.sendFile(__dirname + '/public/reset-password.html');
 });
 
 
 app.post("/reset-password", async (req, res) => {
-    console.log("POSTING TO RESET-PASSWORD");
     const newPassword = req.body["newPassword"];
     const email = req.body["email"];
 
     let q = User.find({email: email});
     let user = (await q.exec())[0];
 
-    //VERY INSECURE
     user.setPassword(newPassword, (error, user)=> {
         if(error) {
             console.log("COULD NOT RESET PASSWORD");
@@ -354,18 +316,13 @@ app.post("/reset-password", async (req, res) => {
 });
 
 app.get("/reset-password/confirm", (req, res) => {
-    console.log("serving confirm-reset");
     res.sendFile(__dirname + '/public/confirm-reset.html');
 });
 
 app.post("/reset-password/confirm", async (req, res) => {
-    console.log("POSTING TO confirm-reset");
-    // res.sendFile(__dirname + '/public/confirm-reset.html');
-
     let email = req.body["email"];
     let secret = req.body["secret"];
 
-    
     let q = User.find({email: email});
     let user = (await q.exec())[0];
 
@@ -374,7 +331,7 @@ app.post("/reset-password/confirm", async (req, res) => {
         res.status(200);
         res.redirect("/reset-password");
     }else {
-        console.log("ERROR CONFIRMING SECURE CODE");
+        console.log("ERROR CONFIRMING SECURITY CODE");
         res.sendStatus(500);
     }
 

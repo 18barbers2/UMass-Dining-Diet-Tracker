@@ -19,8 +19,6 @@ async function loadGoals() {
     const userData = await response.json();
     const nutritionGoals = userData['nutritionGoals'];
 
-    console.log(nutritionGoals);
-
     //update the values in the text box for each nutrition box
     document.getElementById("calorie-goal").value = nutritionGoals["calories"];
     document.getElementById("carbohydrates-goal").value = nutritionGoals["carbohydrates"];
