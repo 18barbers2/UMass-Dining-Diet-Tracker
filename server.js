@@ -18,12 +18,12 @@ const port = process.env.PORT || 8080;
 const app = express();
 
 const session = {
-    secret : process.env.SECRET || 'SECRET', // set this encryption key in Heroku config (never in GitHub)!
+    secret : process.env.SECRET, // set this encryption key in Heroku config (never in GitHub)!
     resave : false,
     saveUninitialized: false
 };
 
-const mailPass = process.env.MAILPASS || 'GE!JW/DYw2HBT-x5';
+const mailPass = process.env.EMAILPASS;
 const transporter = nodemailer.createTransport({
     port: 465,               // true for 465, false for other ports
     host: "smtp.gmail.com",
@@ -46,7 +46,7 @@ app.use(express.static('html'));
 passport.serializeUser(User.serializeUser())
 passport.deserializeUser(User.deserializeUser());
 
-const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
+const pass = process.env.PASSWORD;
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true }
