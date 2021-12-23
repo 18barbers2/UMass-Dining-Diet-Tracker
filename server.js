@@ -106,7 +106,6 @@ app.post('/sign-in', passport.authenticate('local', {
     }
 });
 
-// CREATE ACCOUNT
 app.get('/create-account', (req, res) => {
     res.sendFile(__dirname + '/public/create-account.html');
 });
