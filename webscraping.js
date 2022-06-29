@@ -2,7 +2,7 @@ import puppeteer from 'puppeteer';
 import mongoose from 'mongoose';
 import { Food } from './models/user.js';
 
-const pass = process.env.PASSWORD || 'cWDxP9BfaqjgzD4';
+const pass = process.env.PASSWORD;
 const dbname = 'umass_diet_tracker_database';
 const url = `mongodb+srv://umassdiningdiettracker:${pass}@umassdiningcluster.dxpep.mongodb.net/${dbname}?retryWrites=true&w=majority`;
 const connectionParams={useNewUrlParser: true, useUnifiedTopology: true };
