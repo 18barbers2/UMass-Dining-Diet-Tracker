@@ -19,18 +19,18 @@ The application is hosted on Heroku at https://umass-dining-diet-tracker.herokua
 ### Create Account
 ![Create Account Page](docs/final-res/image09.png)
 
-## Sign In
+### Sign In
 ![Sign-in Page](docs/final-res/image01.png)
 
-## Home Page
+### Home Page
 ![Home Page 1](docs/final-res/image04.png)
 
-## Goals
+### Goals
 ![Goal Page](docs/final-res/image06.png)
 
-## Food
+### Food
 ![Food Page](docs/final-res/image08.png)
 
-## Reset Password
+### Reset Password
 ![Reset Password Page 1](docs/final-res/image10.png)
 ![Reset Password Page 2](docs/final-res/image12.png)
