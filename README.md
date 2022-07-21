@@ -12,7 +12,7 @@ We created a web application that allows users to track what they eat at the UMa
 The application is hosted on Heroku at https://umass-dining-diet-tracker.herokuapp.com/ however it has not been maintained. The application may not be functioning as intended as of Dec 11, 2021.
 
 
-## [Video Demo](https://www.youtube.com/watch?v=FfFniUb_e0g&list=PLbTmqqGclWPKulyyrGo2EIt9z1ZfMprdO&index=21)
+## A [Video Demo](https://www.youtube.com/watch?v=FfFniUb_e0g&list=PLbTmqqGclWPKulyyrGo2EIt9z1ZfMprdO&index=21) of the application
 
 ## Pictures
 
