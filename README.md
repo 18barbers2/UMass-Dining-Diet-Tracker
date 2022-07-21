@@ -1,7 +1,7 @@
-# UMass-Dining-Diet-Tracker
+# Unofficial UMass Dining Diet Tracker
 
 ## Contributers
-Sam Barber: [18barbers2](https://github.com/18barbers2/) Ilya Pindrus: [ilya-pindrus](https://github.com/ilya-pindrus/) Jakob Parkinson: [jakobparkinson](https://github.com/jakobparkinson/)
+Sam Barber: [Github](https://github.com/18barbers2/) Ilya Pindrus: [Github](https://github.com/ilya-pindrus/) Jakob Parkinson: [Github](https://github.com/jakobparkinson/)
 
 ## Project Description
 
